@@ -7,6 +7,7 @@ class ConsoleManager():
        self.translate = translate
        self.console = console
        self.console_queue = dq(maxlen=20)
+       self.push2console('Starting Console Manager')
 
     def push2console(self, msg):
         print(msg)

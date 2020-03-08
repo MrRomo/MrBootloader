@@ -26,19 +26,34 @@ class MrBootloader():
         self.baudSelector = self.ui.baudSelector
         self.hexBox = self.ui.hexBox
         self.console = self.ui.console
+        self.connectButton = self.ui.connectButton
+        self.flashButton = self.ui.flashButton
+        self.eraseButton = self.ui.eraseButton
+        self.sendButton = self.ui.sendButton
+        
+        # Init Managers 
         self.consoleManager = ConsoleManager(self.console, self.translate)
-        self.consoleManager.push2console('Starting Mr Bootloader')
-        self.serialManager = SerialManager(self.consoleManager, self.ui.portSelector)
-        self.portSelector.currentIndexChanged.connect(self.serialManager.change_port)
-
+        self.serialManager = SerialManager(self.consoleManager, self.ui)
+        
+        self.startSignals()
 
         self.startThread(self.serialManager.port_events)
         self.startThread(self.serialManager.port_selector_observer)
+        self.startThread(self.serialManager.read_port)
 
     def startThread(self, function):
         thread = threading.Thread(target=function)
         thread.daemon = True
         thread.start()
+    
+    def startSignals(self):
+        self.consoleManager.push2console('Starting Signals')
+        self.portSelector.currentIndexChanged.connect(self.serialManager.change_port)
+        self.connectButton.clicked.connect(self.serialManager.connect)
+        self.eraseButton.clicked.connect(self.serialManager.change_port)
+        self.flashButton.clicked.connect(self.serialManager.change_port)
+        self.sendButton.clicked.connect(self.serialManager.change_port)
+
     
 
 if __name__ == "__main__":

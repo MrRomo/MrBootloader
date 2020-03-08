@@ -5,15 +5,18 @@ from Utils import Utils
 
 class SerialManager:
 
-    def __init__(self, console, portSelector):
+    def __init__(self, console, ui):
         self.utils = Utils()
-        self.portSelector = portSelector
-        print(portSelector)
+        self.ui = ui
+        self.portSelector = ui.portSelector
+        self.connectButton = ui.connectButton
         self.consoleManager = console
         self.ports = []
         self.current_port = None
         self.serial_connect = serial.Serial
         self.port_flag = False
+        self.connection = None
+        self.connected = False
     
     def get_port_list(self):
         ports = [{'name': i[1], 'port':i[0]} for i in  list(port_list.comports())]
@@ -34,6 +37,7 @@ class SerialManager:
                     self.portSelector.setItemText(idx, self.consoleManager.translate("MainWindow", str(val['name'] + ' - ' + val['port'])))
                 self.consoleManager.push2console(consoleMsg)
                 self.port_flag = True
+                self.disconnect()
             delay(1)
     def port_selector_observer(self): 
         while 1:
@@ -46,11 +50,30 @@ class SerialManager:
     def change_port(self):
         self.port_flag = True
             
-    def connect(self, port):
-        ser = self.serial_connect(port, 9600)
-        return ser
-    def read_port(self, port):
-        pass
+    def connect(self):
+        if(self.connected):
+            self.disconnect()
+        else:
+            baudios = int(self.ui.baudSelector.currentText())
+            self.connection = self.serial_connect(self.current_port, baudios)
+            self.connected = True
+            self.consoleManager.push2console('Connection successfully to {}'.format(self.current_port))
+            self.connectButton.setText(self.ui.translate("MainWindow", 'Disconnect'))
+
+    def disconnect(self):
+        self.connected = False
+        if(self.connection):
+            self.connection.close()
+            self.consoleManager.push2console('Serial disconnected')
+            self.connectButton.setText(self.ui.translate("MainWindow", 'Connect'))
+
+
+    def read_port(self):
+        while 1:
+            if self.connected:
+                msg = self.connection.read()
+                self.consoleManager.push2console(msg)
+
     def wrtie_port(self, port):
         pass
     def list_ports (self):

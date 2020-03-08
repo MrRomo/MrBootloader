@@ -24,7 +24,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Flash</string>
+     <string>Send</string>
     </property>
    </widget>
    <widget class="QPushButton" name="eraseButton">
@@ -60,9 +60,9 @@
     <property name="geometry">
      <rect>
       <x>100</x>
-      <y>30</y>
+      <y>20</y>
       <width>161</width>
-      <height>20</height>
+      <height>30</height>
      </rect>
     </property>
     <item>
@@ -85,9 +85,9 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>30</y>
+      <y>20</y>
       <width>71</width>
-      <height>20</height>
+      <height>30</height>
      </rect>
     </property>
     <property name="font">
@@ -102,10 +102,10 @@
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>320</x>
-      <y>30</y>
+      <x>270</x>
+      <y>20</y>
       <width>111</width>
-      <height>20</height>
+      <height>30</height>
      </rect>
     </property>
     <property name="font">
@@ -120,10 +120,10 @@
    <widget class="QComboBox" name="baudSelector">
     <property name="geometry">
      <rect>
-      <x>400</x>
-      <y>30</y>
-      <width>211</width>
-      <height>20</height>
+      <x>350</x>
+      <y>19</y>
+      <width>121</width>
+      <height>31</height>
      </rect>
     </property>
     <item>
@@ -146,9 +146,102 @@
       <height>131</height>
      </rect>
     </property>
+    <property name="movement">
+     <enum>QListView::Static</enum>
+    </property>
     <item>
      <property name="text">
       <string>hola</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>d</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Nuevo elemento</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Nuevo elemento</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Nuevo elemento</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Nuevo elemento</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Nuevo elemento</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Nuevo elemento</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Nuevo elemento</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Nuevo elemento</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Nuevo elemento</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Nuevo elemento</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Nuevo elemento</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Nuevo elemento</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Nuevo elemento</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Nuevo elemento</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Nuevo elemento</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Nuevo elemento</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>Nuevo elemento</string>
      </property>
     </item>
     <item>
@@ -185,7 +278,7 @@
      <string>Flash</string>
     </property>
    </widget>
-   <widget class="QListWidget" name="console2_2">
+   <widget class="QListWidget" name="hexBox">
     <property name="geometry">
      <rect>
       <x>30</x>
@@ -207,6 +300,39 @@
     <item>
      <property name="text">
       <string>sdfosdnfosdf</string>
+     </property>
+    </item>
+   </widget>
+   <widget class="QPushButton" name="flashButton_2">
+    <property name="geometry">
+     <rect>
+      <x>500</x>
+      <y>20</y>
+      <width>111</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Connect</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="baudSelector_2">
+    <property name="geometry">
+     <rect>
+      <x>820</x>
+      <y>-440</y>
+      <width>121</width>
+      <height>20</height>
+     </rect>
+    </property>
+    <item>
+     <property name="text">
+      <string>9600</string>
+     </property>
+    </item>
+    <item>
+     <property name="text">
+      <string>12500</string>
      </property>
     </item>
    </widget>

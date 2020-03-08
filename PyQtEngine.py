@@ -102,7 +102,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         self.translate = _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.sendButton.setText(_translate("MainWindow", "Flash"))
+        self.sendButton.setText(_translate("MainWindow", "Send"))
         self.connectButton.setText(_translate("MainWindow", "Connect"))
         self.eraseButton.setText(_translate("MainWindow", "Erase"))
         self.progressBar.setFormat(_translate("MainWindow", "%p%"))

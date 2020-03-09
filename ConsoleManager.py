@@ -20,12 +20,12 @@ class ConsoleManager():
                 console_queue = self.console_queue.copy()
                 self.console_queue.clear()
                 for msg in console_queue:
-                    # self.console.moveCursor(QtGui.QTextCursor.End)
-                    # self.console.ensureCursorVisible()
+                    self.console.moveCursor(QtGui.QTextCursor.End)
+                    self.console.ensureCursorVisible()
                     self.console.insertPlainText(msg)
                 
                 self.status = True
-            delay(1)
+            delay(0.2)
             
             # # self.console_queue.appendleft(msg)
             # # text = ''.join(self.console_queue)

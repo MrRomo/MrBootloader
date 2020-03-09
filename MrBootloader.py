@@ -1,8 +1,8 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQtEngine import Ui_MainWindow
 from SerialManager import SerialManager
-from StreamModule import StreamModule
 from ConsoleManager import ConsoleManager
+from FileManager import FileManager
 from time import sleep as delay
 from Utils import Utils
 import threading
@@ -24,8 +24,6 @@ class MrBootloader():
         app_icon = QtGui.QIcon()
         app_icon.addFile('Logo.jpg', QtCore.QSize(256,256))
         self.MainWindow.setWindowIcon(app_icon)
-
-        # self.MainWindow.setWindowIcon(QtGui.QIcon("Logo.jpg"))
         self.MainWindow.show()
 
         self.translate = self.ui.translate
@@ -33,16 +31,18 @@ class MrBootloader():
         self.baudSelector = self.ui.baudSelector
         self.hexBox = self.ui.hexBox
         self.console = self.ui.console
-
+        #Buttons
         self.connectButton = self.ui.connectButton
         self.flashButton = self.ui.flashButton
         self.eraseButton = self.ui.eraseButton
         self.sendButton = self.ui.sendButton
-        
+        #acciotns
+        self.openFile = self.ui.actionOpen
+
         # Init Managers 
         self.consoleManager = ConsoleManager(self.console, self.translate)
         self.serialManager = SerialManager(self.consoleManager, self.ui, self.app)
-        
+        self.fileManager = FileManager(self.hexBox, self.translate)
         self.startSignals()
 
         self.startThread(self.serialManager.port_events)
@@ -62,6 +62,7 @@ class MrBootloader():
         self.eraseButton.clicked.connect(self.serialManager.change_port)
         self.flashButton.clicked.connect(self.serialManager.change_port)
         self.sendButton.clicked.connect(self.serialManager.write_port)
+        self.openFile.triggered.connect(self.fileManager.open_file)
 
     
 

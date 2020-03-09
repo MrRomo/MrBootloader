@@ -74,18 +74,19 @@ class SerialManager:
         self.connected = False
         if(self.connection):
             self.connection.close()
-            self.consoleManager.console_queue.append('Serial disconnecte\n')
+            self.consoleManager.console_queue.append('Serial disconnected\n')
             self.connectButton.setText(self.ui.translate("MainWindow", 'Connect'))
 
 
     def read_port(self):
         while 1:
             if self.connected:
-                msg = self.connection.read()
+                # self.connection.flushInput()
+                msg = self.connection.readline()
                 print(str(msg))
+                self.consoleManager.console_queue.append(msg.decode())
             else:
                 break
-                # self.consoleManager.console_queue.append(str(msg))
 
     def write_port(self, port):
         if(self.connection):

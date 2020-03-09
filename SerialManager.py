@@ -2,12 +2,15 @@ import serial
 import serial.tools.list_ports as port_list
 from time import sleep as delay
 from Utils import Utils
+import threading
+import sys
 
 class SerialManager:
 
-    def __init__(self, console, ui):
+    def __init__(self, console, ui, app):
         self.utils = Utils()
         self.ui = ui
+        self.app = app
         self.portSelector = ui.portSelector
         self.connectButton = ui.connectButton
         self.consoleManager = console
@@ -24,7 +27,8 @@ class SerialManager:
         return ports
 
     def port_events(self):
-        self.consoleManager.push2console('Starting port Events Manager')
+        self.disconnect()
+        self.consoleManager.console_queue.append('Starting port Events Manager\n')
         while 1:
             list_ports = [i for i in self.get_port_list()]
             if (list_ports != self.ports):
@@ -32,19 +36,19 @@ class SerialManager:
                 self.ports = list_ports
                 self.portSelector.clear()
                 for idx, val in enumerate(list_ports):
-                    print(idx)
                     self.portSelector.addItem("")
                     self.portSelector.setItemText(idx, self.consoleManager.translate("MainWindow", str(val['name'] + ' - ' + val['port'])))
-                self.consoleManager.push2console(consoleMsg)
+                self.consoleManager.console_queue.append(consoleMsg)
                 self.port_flag = True
+                self.portSelector.setCurrentIndex(0)
                 self.disconnect()
-            delay(1)
+
     def port_selector_observer(self): 
         while 1:
             if self.port_flag: 
                 self.current_port = self.ports[self.portSelector.currentIndex()]['port'] 
                 self.port_flag = False
-                self.consoleManager.push2console('Changing port to {}'.format(self.current_port))
+                self.consoleManager.console_queue.append('Changing port to {}\n'.format(self.current_port))
             delay(1)
 
     def change_port(self):
@@ -57,14 +61,20 @@ class SerialManager:
             baudios = int(self.ui.baudSelector.currentText())
             self.connection = self.serial_connect(self.current_port, baudios)
             self.connected = True
-            self.consoleManager.push2console('Connection successfully to {}'.format(self.current_port))
+            self.consoleManager.console_queue.append('Connection successfully to {}\n'.format(self.current_port))
             self.connectButton.setText(self.ui.translate("MainWindow", 'Disconnect'))
+            read_port = threading.Thread(target=self.read_port)
+            read_port.start()
+            # sys.exit(self.app.exec_())
+
+
+
 
     def disconnect(self):
         self.connected = False
         if(self.connection):
             self.connection.close()
-            self.consoleManager.push2console('Serial disconnected')
+            self.consoleManager.console_queue.append('Serial disconnecte\n')
             self.connectButton.setText(self.ui.translate("MainWindow", 'Connect'))
 
 
@@ -72,10 +82,16 @@ class SerialManager:
         while 1:
             if self.connected:
                 msg = self.connection.read()
-                self.consoleManager.push2console(msg)
+                print(str(msg))
+            else:
+                break
+                # self.consoleManager.console_queue.append(str(msg))
 
-    def wrtie_port(self, port):
-        pass
+    def write_port(self, port):
+        if(self.connection):
+            msg = self.ui.sendField.toPlainText()
+            self.connection.writelines(msg.encode())
+           
     def list_ports (self):
         return self.get_port_list()
     

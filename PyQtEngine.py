@@ -53,6 +53,7 @@ class Ui_MainWindow(object):
         self.console = QtWidgets.QPlainTextEdit(self.centralwidget)
         self.console.setGeometry(QtCore.QRect(30, 540, 581, 131))
         self.console.setObjectName("console")
+        self.console.setMaximumBlockCount(10)
         self.sendField = QtWidgets.QPlainTextEdit(self.centralwidget)
         self.sendField.setGeometry(QtCore.QRect(150, 680, 461, 31))
         self.sendField.setObjectName("sendField")

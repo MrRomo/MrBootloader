@@ -3,12 +3,13 @@ from PyQtEngine import Ui_MainWindow
 from SerialManager import SerialManager
 from ConsoleManager import ConsoleManager
 from FileManager import FileManager
+from BurnerManager import BurnerManager
 from time import sleep as delay
 from Utils import Utils
 import threading
 import sys
 
-class MrBootloader():
+class MrBurner():
 
     def __init__(self):
         self.ports = []
@@ -31,6 +32,7 @@ class MrBootloader():
         self.baudSelector = self.ui.baudSelector
         self.hexBox = self.ui.hexBox
         self.console = self.ui.console
+
         #Buttons
         self.connectButton = self.ui.connectButton
         self.flashButton = self.ui.flashButton
@@ -42,13 +44,15 @@ class MrBootloader():
         # Init Managers 
         self.consoleManager = ConsoleManager(self.console, self.translate)
         self.serialManager = SerialManager(self.consoleManager, self.ui, self.app)
-        self.fileManager = FileManager(self.hexBox, self.translate)
+        self.fileManager = FileManager(self.hexBox, self.translate, self.consoleManager)
+        self.burnerManager = BurnerManager(self.serialManager, self.fileManager, self.ui.progressBar, self.consoleManager)
         self.startSignals()
 
         self.startThread(self.serialManager.port_events)
         self.startThread(self.serialManager.port_selector_observer)
         self.startThread(self.consoleManager.console_agent)
-        # self.startThread(self.serialManager.read_port)
+        self.startThread(self.serialManager.read_port)
+        self.startThread(self.burnerManager.burn_task)
 
     def startThread(self, function):
         thread = threading.Thread(target=function)
@@ -56,11 +60,11 @@ class MrBootloader():
         thread.start()
     
     def startSignals(self):
-        self.consoleManager.console_queue.append('Starting Signals\n')
+        self.consoleManager.pub('Starting Signals\n')
         self.portSelector.currentIndexChanged.connect(self.serialManager.change_port)
         self.connectButton.clicked.connect(self.serialManager.connect)
         self.eraseButton.clicked.connect(self.serialManager.change_port)
-        self.flashButton.clicked.connect(self.serialManager.change_port)
+        self.flashButton.clicked.connect(self.burnerManager.burn)
         self.sendButton.clicked.connect(self.serialManager.write_port)
         self.openFile.triggered.connect(self.fileManager.open_file)
 
@@ -68,7 +72,7 @@ class MrBootloader():
 
 if __name__ == "__main__":
 
-    app = MrBootloader()
+    app = MrBurner()
     app.startApp()
     sys.exit(app.app.exec_())
 

@@ -1,0 +1,15 @@
+main
+	__CC2DW
+		____DoICP
+	start
+		UART1_Init
+	UART1_Write_Text
+		UART1_Write
+	UART1_Data_Ready
+	readData
+		UART1_Read
+	ascii2hex
+		readData
+			UART1_Read
+		mult
+	UART1_Write

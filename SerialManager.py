@@ -58,7 +58,7 @@ class SerialManager:
             self.disconnect()
         else:
             baudios = int(self.ui.baudSelector.currentText())
-            self.connection = self.serial_connect(self.current_port, baudios)
+            self.connection = self.serial_connect(self.current_port, baudios, rtscts=True)
             self.connected = True
             self.consoleManager.pub('Connection successfully to {}\n'.format(self.current_port))
             self.connectButton.setText(self.ui.translate("MainWindow", 'Disconnect'))
@@ -78,17 +78,23 @@ class SerialManager:
         while 1:
             if self.connected:
                 # self.connection.flushInput()
-                msg = self.connection.read()
-                print(str(msg))
-                self.consoleManager.pub(str(msg)+'Text')
+                read = self.connection.read()
+                msg = str(read.hex())
+                # print('{}-{}-{}'.format(str(read),read.hex(),int.from_bytes(read,sys.byteorder)))
+                print('{}-{}'.format(str(read), read.hex()))
+                self.consoleManager.pub(msg)
                 
-                # except expression as identifier:
-                #     print(error)
-
-    def write_port(self, msg = None):
-        if(self.connection):
-            msg = msg if msg else self.ui.sendField.toPlainText()
+    def write_port(self):
+        msg = self.ui.sendField.toPlainText()
+        print('Enviando Datos', self.connected, msg)
+        if(self.connected):
             self.connection.write(msg.encode())
+    
+    def write_port_byte(self, msg):
+        print('Enviando Datos', self.connected, msg)
+        if(self.connected):
+            self.connection.write(msg.encode())
+
            
     def list_ports (self):
         return self.get_port_list()

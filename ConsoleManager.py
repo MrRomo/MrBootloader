@@ -2,7 +2,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from collections import deque as dq 
 from datetime import datetime
 from time import sleep as delay
-
 class ConsoleManager():
     def __init__(self, console, translate):
         self.translate = translate

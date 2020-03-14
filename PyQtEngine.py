@@ -21,6 +21,7 @@ class QueueThread(QThread):
                 msg = self.queue[0]
                 self.queue.popleft()                
                 self.change_value.emit(msg)
+            delay(0.01)
 
 class QueueThreadInt(QThread):
     # Create a counter thread
@@ -31,7 +32,7 @@ class QueueThreadInt(QThread):
             msg = self.queue[0]
             self.queue.popleft()                
             self.change_value.emit(msg)
-        delay(0.5)
+        delay(1)
 
 class QueueThreadList(QThread):
     # Create a counter thread
@@ -43,6 +44,7 @@ class QueueThreadList(QThread):
                 msg = self.queue[0]
                 self.queue.popleft()                
                 self.change_value.emit(msg)
+            delay(1)
 
 
 class Ui_MainWindow(object):

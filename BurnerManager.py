@@ -17,7 +17,7 @@ class BurnerManager:
 
     def burn(self):
         self.console.pub('\nBurn .hex file \n')
-        threading.Thread(target=self.burn_task).start()
+        threading.Thread(target=self.burn_task, daemon=True).start()
 
     def burn_task(self):    
         code = self.fileManager.code

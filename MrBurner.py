@@ -62,13 +62,13 @@ class MrBurner():
         self.connectButton.clicked.connect(self.serialManager.connect)
         self.eraseButton.clicked.connect(self.serialManager.change_port)
         self.flashButton.clicked.connect(self.burnerManager.burn)
-        self.sendButton.clicked.connect(self.serialManager.write_port)
+        self.sendButton.clicked.connect(self.serialManager.send_write)
         self.openFile.triggered.connect(self.fileManager.open_file)
 
     def startThreads(self):
         self.startThread(self.serialManager.port_events)
         # self.startThread(self.serialManager.port_selector_observer)
-        self.startThread(self.serialManager.read_port)
+        # self.startThread(self.serialManager.read_port)
         # self.startThread(self.burnerManager.burn_task)
 
     

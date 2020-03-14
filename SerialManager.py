@@ -58,6 +58,7 @@ class SerialManager:
             self.connected = True
             self.consoleManager.pub('Connection successfully to {}\n'.format(self.current_port))
             self.connectButton.setText(self.ui.translate("MainWindow", 'Disconnect'))
+            threading.Thread(target=self.read_port, daemon=True).start()
 
     def disconnect(self):
         self.connected = False
@@ -66,33 +67,32 @@ class SerialManager:
             self.consoleManager.pub('Serial disconnected\n')
             self.connectButton.setText(self.ui.translate("MainWindow", 'Connect'))
 
-
     def read_port(self):
         while 1:
             if self.connected:
-                # self.connection.flushInput()
-                read = self.connection.read()
-                msg = str(read.hex())
-                # print('{}-{}-{}'.format(str(read),read.hex(),int.from_bytes(read,sys.byteorder)))
-                # print('{}-{}'.format(str(read), read.hex()))
-                self.consoleManager.pub(msg)
+                try:
+                    read = self.connection.read()
+                    msg = str(read.hex())
+                    self.consoleManager.pub(msg)
+                except serial.serialutil.SerialException as SerialException:
+                    self.disconnect()
+                    print(SerialException)
+            else:
+                break
                 
-    def write_port(self):
+    def send_write(self):
         msg = self.ui.sendField.toPlainText()
-        if not(self.connected):
-            self.connect()
         self.consoleManager.pub('\n')
         print(msg, len(msg), type(msg))
-        threading.Thread(target=self.write_port_byte,  kwargs={'msg':msg},
-                ).start()
+        threading.Thread(target=self.write_port_byte,  kwargs={'msg':msg},).start()
     
     def write_port_byte(self, msg):
         print('Enviando Datos', self.connected, msg)
-        if(self.connected):
-            for i in list(msg):
-                self.connection.write(i.encode())
+        if not(self.connected):
+            self.connect()
+        for i in list(msg):
+            self.connection.write(i.encode())
 
-           
     def list_ports (self):
         return self.get_port_list()
     

@@ -7,6 +7,17 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtCore import Qt, QThread, pyqtSignal
+
+
+
+class HexBox(QThread):
+    # Create a counter thread
+    change_value = pyqtSignal(int)
+    def run(self):
+        while 1:
+            
+
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
@@ -89,6 +100,9 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+        self.thread = HexBox()
+        self.thread.start()
+
     def retranslateUi(self, MainWindow):
         self.translate = _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MrBurner"))
@@ -108,6 +122,8 @@ class Ui_MainWindow(object):
         self.menuOptions.setTitle(_translate("MainWindow", "Options"))
         self.actionOpen.setText(_translate("MainWindow", "Open"))
         self.actionExit.setText(_translate("MainWindow", "Exit"))
+    
+
 
 
 if __name__ == "__main__":

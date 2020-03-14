@@ -23,7 +23,7 @@ class ConsoleManager():
                 self.status = False
                 msg = self.console_queue[0]
                 # self.console.moveCursor(QtGui.QTextCursor.End)
-                self.console.ensureCursorVisible()
+                # self.console.ensureCursorVisible()
                 self.console.insertPlainText(msg)
                 # print(self.console.verticalScrollBar().maximum())
                 self.console_queue.popleft()                

@@ -3,6 +3,7 @@ import serial.tools.list_ports as port_list
 from time import sleep as delay
 from Utils import Utils
 import threading
+from PyQt5 import QtCore
 import sys
 
 class SerialManager:
@@ -20,6 +21,7 @@ class SerialManager:
         self.port_flag = False
         self.connection = None
         self.connected = False
+        self.translate = QtCore.QCoreApplication.translate
     
     def get_port_list(self):
         ports = [{'name': i[1], 'port':i[0]} for i in  list(port_list.comports())]
@@ -36,11 +38,12 @@ class SerialManager:
                 self.portSelector.clear()
                 for idx, val in enumerate(list_ports):
                     self.portSelector.addItem("")
-                    self.portSelector.setItemText(idx, self.consoleManager.translate("MainWindow", str(val['name'] + ' - ' + val['port'])))
-                self.consoleManager.pub(consoleMsg)
-                self.port_flag = True
-                self.portSelector.setCurrentIndex(0)
-                self.disconnect()
+                    item = str(val['name'] + ' - ' + val['port'])
+                    self.portSelector.setItemText(idx, self.translate("MainWindow", item))
+            #     self.consoleManager.pub(consoleMsg)
+            #     self.port_flag = True
+            #     self.portSelector.setCurrentIndex(0)
+            #     self.disconnect()
 
     def port_selector_observer(self): 
         while 1:
@@ -61,7 +64,7 @@ class SerialManager:
             self.connection = self.serial_connect(self.current_port, baudios, rtscts=True)
             self.connected = True
             self.consoleManager.pub('Connection successfully to {}\n'.format(self.current_port))
-            self.connectButton.setText(self.ui.translate("MainWindow", 'Disconnect'))
+            # self.connectButton.setText(self.ui.translate("MainWindow", 'Disconnect'))
             # read_port = threading.Thread(target=self.read_port)
             # read_port.start()
             # sys.exit(self.app.exec_())

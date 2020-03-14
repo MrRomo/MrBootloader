@@ -47,12 +47,8 @@ class MrBurner():
         self.fileManager = FileManager(self.hexBox, self.translate, self.consoleManager)
         self.burnerManager = BurnerManager(self.serialManager, self.fileManager, self.ui.progressBar, self.consoleManager)
         self.startSignals()
-
-        self.startThread(self.serialManager.port_events)
-        self.startThread(self.serialManager.port_selector_observer)
-        self.startThread(self.consoleManager.console_agent)
-        self.startThread(self.serialManager.read_port)
-        self.startThread(self.burnerManager.burn_task)
+        self.startThreads()
+        
 
     def startThread(self, function):
         thread = threading.Thread(target=function)
@@ -67,6 +63,13 @@ class MrBurner():
         self.flashButton.clicked.connect(self.burnerManager.burn)
         self.sendButton.clicked.connect(self.serialManager.write_port)
         self.openFile.triggered.connect(self.fileManager.open_file)
+
+    def startThreads(self):
+        self.startThread(self.serialManager.port_events)
+        # self.startThread(self.serialManager.port_selector_observer)
+        # self.startThread(self.consoleManager.console_agent)
+        # self.startThread(self.serialManager.read_port)
+        # self.startThread(self.burnerManager.burn_task)
 
     
 

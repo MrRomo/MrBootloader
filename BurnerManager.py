@@ -16,8 +16,9 @@ class BurnerManager:
         self.burn_signal = False
         self.finish = False
 
+
     def burn(self):
-        self.console.pub('\nBurn .hex file \n')
+        # self.console.pub('\nBurn .hex file \n')
         self.burn_signal = True
 
     def burn_task(self):

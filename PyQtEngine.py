@@ -8,15 +8,41 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import Qt, QThread, pyqtSignal
+from collections import deque as dq 
+from time import sleep as delay
 
-
-
-class HexBox(QThread):
+class QueueThread(QThread):
     # Create a counter thread
-    change_value = pyqtSignal(int)
+    change_value = pyqtSignal(str)
     def run(self):
+        self.queue = dq(maxlen = 200)
         while 1:
-            
+            if(len(self.queue)):
+                msg = self.queue[0]
+                self.queue.popleft()                
+                self.change_value.emit(msg)
+
+class QueueThreadInt(QThread):
+    # Create a counter thread
+    change_value = pyqtSignal(str)
+    def run(self):
+        self.queue = dq(maxlen = 200)
+        if(len(self.queue)):
+            msg = self.queue[0]
+            self.queue.popleft()                
+            self.change_value.emit(msg)
+        delay(0.5)
+
+class QueueThreadList(QThread):
+    # Create a counter thread
+    change_value = pyqtSignal(list)
+    def run(self):
+        self.queue = dq(maxlen = 200)
+        while 1:
+            if(len(self.queue)):
+                msg = self.queue[0]
+                self.queue.popleft()                
+                self.change_value.emit(msg)
 
 
 class Ui_MainWindow(object):
@@ -62,9 +88,10 @@ class Ui_MainWindow(object):
         self.connectButton.setGeometry(QtCore.QRect(500, 30, 110, 20))
         self.connectButton.setObjectName("connectButton")
         self.console = QtWidgets.QPlainTextEdit(self.centralwidget)
+        self.console.setReadOnly(True)
         self.console.setGeometry(QtCore.QRect(30, 540, 581, 131))
         self.console.setObjectName("console")
-        self.console.setMaximumBlockCount(10)
+        self.console.setMaximumBlockCount(100)
         self.sendField = QtWidgets.QPlainTextEdit(self.centralwidget)
         self.sendField.setGeometry(QtCore.QRect(150, 680, 461, 31))
         self.sendField.setObjectName("sendField")
@@ -74,7 +101,7 @@ class Ui_MainWindow(object):
         self.hexBox = QtWidgets.QPlainTextEdit(self.centralwidget)
         self.hexBox.setGeometry(QtCore.QRect(30, 60, 581, 411))
         self.hexBox.setObjectName("hexBox")
-        
+        self.hexBox.setReadOnly(True)        
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 641, 21))
@@ -100,8 +127,38 @@ class Ui_MainWindow(object):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
-        self.thread = HexBox()
-        self.thread.start()
+        self.hex_box_thread = QueueThreadList()
+        self.hex_box_thread.change_value.connect(self.updateHexBox)
+        self.hex_box_thread.start()
+        
+        self.console_thread = QueueThread()
+        self.console_thread.change_value.connect(self.updateConsole)
+        self.console_thread.start()
+        
+        self.port_selector_thread = QueueThreadList()
+        self.port_selector_thread.change_value.connect(self.updatePortSelector)
+        self.port_selector_thread.start()
+
+    def updateHexBox(self, msg):
+        self.hexBox.clear()
+        for line in msg:
+            self.hexBox.moveCursor(QtGui.QTextCursor.End)
+            self.hexBox.ensureCursorVisible()
+            self.hexBox.insertPlainText(line+'\n')
+        
+    def updateConsole(self, msg):
+        self.console.moveCursor(QtGui.QTextCursor.End)
+        self.console.ensureCursorVisible()
+        self.console.insertPlainText(msg)
+    
+    def updatePortSelector(self, list_ports):
+        self.portSelector.clear()
+        for idx, val in enumerate(list_ports):
+            self.portSelector.addItem("")
+            item = str(val['name'] + ' - ' + val['port'])
+            self.portSelector.setItemText(idx, self.translate("MainWindow", item))
+        self.portSelector.setCurrentIndex(0)
+            
 
     def retranslateUi(self, MainWindow):
         self.translate = _translate = QtCore.QCoreApplication.translate

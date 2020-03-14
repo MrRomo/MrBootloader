@@ -4,7 +4,7 @@ typedef struct trama{
   unsigned char addr;
   unsigned char addrh;
   unsigned char type;
-  unsigned char * info;
+  unsigned char info[64];
   unsigned char checksum;
 }trama_t;
 

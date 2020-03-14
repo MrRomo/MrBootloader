@@ -3,6 +3,7 @@ void start();
 unsigned char ascii2hex();
 unsigned char mult(unsigned char dato);
 unsigned char readData();
+unsigned char check_sum(trama_t * Trama);
 void main() {
      trama_t * Trama;
      unsigned char byteRecv = 0x00;
@@ -17,22 +18,25 @@ void main() {
       if(UART1_Data_Ready()){
        byteRecv = readData();
        if(byteRecv == ':'){
-        UART1_Write_Text("Start");
         Trama->size = ascii2hex();
-          UART1_Write(Trama->size);
         Trama->addr = ascii2hex();
-          UART1_Write(Trama->addr);
         Trama->addrh = ascii2hex();
-          UART1_Write(Trama->addrh);
         Trama->type = ascii2hex();
-          UART1_Write(Trama->type);
         for (j = 0; j < Trama->size; j++)
         {
-          byteRecv = ascii2hex();
+          Trama->info[j] = ascii2hex();
         }
         Trama->checksum = ascii2hex();
-          UART1_Write(Trama->checksum);
+//        check_sum(Trama);
+        // UART1_Write_Text("Start");
+        // UART1_Write(Trama->size);
+        // UART1_Write(Trama->addr);
+        // UART1_Write(Trama->addrh);
+        // UART1_Write(Trama->type);
+        // UART1_Write(Trama->checksum);
+
        }
+       
        PORTB = 0x00;
       }
      }
@@ -48,9 +52,12 @@ void start() {
  }
 
 unsigned char ascii2hex(){
-    unsigned char dato = 0x00;
+    unsigned char dato, dato2 = 0x00;
     dato = mult(readData())*16;
-    dato += mult(readData());
+    UART1_Write(dato);
+    dato2 = mult(readData());
+    UART1_Write(dato2);
+    dato += dato2;
     PORTB = 0xFF;
     return dato;
 }
@@ -66,9 +73,22 @@ unsigned char mult(unsigned char dato){
 unsigned char readData(){
    unsigned char dato;
    PORTB = 0x00;
-   Delay_ms(1);
-   dato = UART1_Read();
-   PORTB = 0xFF;
-   Delay_ms(1);
-   return dato;
+   while (1){
+     if(UART1_Data_Ready()){
+        dato = UART1_Read();
+        PORTB = 0xFF;
+        return dato;
+     }
+   }
+}
+
+unsigned char check_sum(trama_t * Trama){
+   unsigned char checksum = 0x00;
+   unsigned char i = 0x00;
+   checksum = Trama->size + Trama->addr+Trama->addrh+Trama->type;
+   for (i=0; i<Trama->size; i++){
+       checksum += Trama->info[i];
+   }
+   checksum = ~checksum + 1;
+   UART1_Write(checksum);
 }

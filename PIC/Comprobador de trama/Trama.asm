@@ -110,18 +110,18 @@ L_end_write_eeprom:
 
 _main:
 
-;Trama.c,6 :: 		void main() {
-;Trama.c,8 :: 		unsigned char byteRecv = 0x00;
-;Trama.c,10 :: 		start();
+;Trama.c,7 :: 		void main() {
+;Trama.c,9 :: 		unsigned char byteRecv = 0x00;
+;Trama.c,11 :: 		start();
 	CALL       _start+0
-;Trama.c,11 :: 		for (j = 0; j < 3; j++)
+;Trama.c,12 :: 		for (j = 0; j < 3; j++)
 	CLRF       main_j_L0+0
 L_main4:
 	MOVLW      3
 	SUBWF      main_j_L0+0, 0
 	BTFSC      STATUS+0, 0
 	GOTO       L_main5
-;Trama.c,13 :: 		Delay_ms(1000);
+;Trama.c,14 :: 		Delay_ms(1000);
 	MOVLW      6
 	MOVWF      R11+0
 	MOVLW      19
@@ -137,33 +137,29 @@ L_main7:
 	GOTO       L_main7
 	NOP
 	NOP
-;Trama.c,14 :: 		UART1_Write_Text("Inicio");
+;Trama.c,15 :: 		UART1_Write_Text("Inicio");
 	MOVLW      ?lstr1_Trama+0
 	MOVWF      FARG_UART1_Write_Text_uart_text+0
 	CALL       _UART1_Write_Text+0
-;Trama.c,11 :: 		for (j = 0; j < 3; j++)
+;Trama.c,12 :: 		for (j = 0; j < 3; j++)
 	INCF       main_j_L0+0, 1
-;Trama.c,15 :: 		}
+;Trama.c,16 :: 		}
 	GOTO       L_main4
 L_main5:
-;Trama.c,16 :: 		while (1) {
+;Trama.c,17 :: 		while (1) {
 L_main8:
-;Trama.c,17 :: 		if(UART1_Data_Ready()){
+;Trama.c,18 :: 		if(UART1_Data_Ready()){
 	CALL       _UART1_Data_Ready+0
 	MOVF       R0+0, 0
 	BTFSC      STATUS+0, 2
 	GOTO       L_main10
-;Trama.c,18 :: 		byteRecv = readData();
+;Trama.c,19 :: 		byteRecv = readData();
 	CALL       _readData+0
-;Trama.c,19 :: 		if(byteRecv == ':'){
+;Trama.c,20 :: 		if(byteRecv == ':'){
 	MOVF       R0+0, 0
 	XORLW      58
 	BTFSS      STATUS+0, 2
 	GOTO       L_main11
-;Trama.c,20 :: 		UART1_Write_Text("Start");
-	MOVLW      ?lstr2_Trama+0
-	MOVWF      FARG_UART1_Write_Text_uart_text+0
-	CALL       _UART1_Write_Text+0
 ;Trama.c,21 :: 		Trama->size = ascii2hex();
 	MOVF       main_Trama_L0+0, 0
 	MOVWF      FLOC__main+0
@@ -172,13 +168,7 @@ L_main8:
 	MOVWF      FSR
 	MOVF       R0+0, 0
 	MOVWF      INDF+0
-;Trama.c,22 :: 		UART1_Write(Trama->size);
-	MOVF       main_Trama_L0+0, 0
-	MOVWF      FSR
-	MOVF       INDF+0, 0
-	MOVWF      FARG_UART1_Write_data_+0
-	CALL       _UART1_Write+0
-;Trama.c,23 :: 		Trama->addr = ascii2hex();
+;Trama.c,22 :: 		Trama->addr = ascii2hex();
 	INCF       main_Trama_L0+0, 0
 	MOVWF      FLOC__main+0
 	CALL       _ascii2hex+0
@@ -186,13 +176,7 @@ L_main8:
 	MOVWF      FSR
 	MOVF       R0+0, 0
 	MOVWF      INDF+0
-;Trama.c,24 :: 		UART1_Write(Trama->addr);
-	INCF       main_Trama_L0+0, 0
-	MOVWF      FSR
-	MOVF       INDF+0, 0
-	MOVWF      FARG_UART1_Write_data_+0
-	CALL       _UART1_Write+0
-;Trama.c,25 :: 		Trama->addrh = ascii2hex();
+;Trama.c,23 :: 		Trama->addrh = ascii2hex();
 	MOVLW      2
 	ADDWF      main_Trama_L0+0, 0
 	MOVWF      FLOC__main+0
@@ -201,14 +185,7 @@ L_main8:
 	MOVWF      FSR
 	MOVF       R0+0, 0
 	MOVWF      INDF+0
-;Trama.c,26 :: 		UART1_Write(Trama->addrh);
-	MOVLW      2
-	ADDWF      main_Trama_L0+0, 0
-	MOVWF      FSR
-	MOVF       INDF+0, 0
-	MOVWF      FARG_UART1_Write_data_+0
-	CALL       _UART1_Write+0
-;Trama.c,27 :: 		Trama->type = ascii2hex();
+;Trama.c,24 :: 		Trama->type = ascii2hex();
 	MOVLW      3
 	ADDWF      main_Trama_L0+0, 0
 	MOVWF      FLOC__main+0
@@ -217,14 +194,7 @@ L_main8:
 	MOVWF      FSR
 	MOVF       R0+0, 0
 	MOVWF      INDF+0
-;Trama.c,28 :: 		UART1_Write(Trama->type);
-	MOVLW      3
-	ADDWF      main_Trama_L0+0, 0
-	MOVWF      FSR
-	MOVF       INDF+0, 0
-	MOVWF      FARG_UART1_Write_data_+0
-	CALL       _UART1_Write+0
-;Trama.c,29 :: 		for (j = 0; j < Trama->size; j++)
+;Trama.c,25 :: 		for (j = 0; j < Trama->size; j++)
 	CLRF       main_j_L0+0
 L_main12:
 	MOVF       main_Trama_L0+0, 0
@@ -235,15 +205,25 @@ L_main12:
 	SUBWF      main_j_L0+0, 0
 	BTFSC      STATUS+0, 0
 	GOTO       L_main13
-;Trama.c,31 :: 		byteRecv = ascii2hex();
+;Trama.c,27 :: 		Trama->info[j] = ascii2hex();
+	MOVLW      4
+	ADDWF      main_Trama_L0+0, 0
+	MOVWF      R0+0
+	MOVF       main_j_L0+0, 0
+	ADDWF      R0+0, 0
+	MOVWF      FLOC__main+0
 	CALL       _ascii2hex+0
-;Trama.c,29 :: 		for (j = 0; j < Trama->size; j++)
+	MOVF       FLOC__main+0, 0
+	MOVWF      FSR
+	MOVF       R0+0, 0
+	MOVWF      INDF+0
+;Trama.c,25 :: 		for (j = 0; j < Trama->size; j++)
 	INCF       main_j_L0+0, 1
-;Trama.c,32 :: 		}
+;Trama.c,28 :: 		}
 	GOTO       L_main12
 L_main13:
-;Trama.c,33 :: 		Trama->checksum = ascii2hex();
-	MOVLW      5
+;Trama.c,29 :: 		Trama->checksum = ascii2hex();
+	MOVLW      68
 	ADDWF      main_Trama_L0+0, 0
 	MOVWF      FLOC__main+0
 	CALL       _ascii2hex+0
@@ -251,41 +231,38 @@ L_main13:
 	MOVWF      FSR
 	MOVF       R0+0, 0
 	MOVWF      INDF+0
-;Trama.c,34 :: 		UART1_Write(Trama->checksum);
-	MOVLW      5
-	ADDWF      main_Trama_L0+0, 0
-	MOVWF      FSR
-	MOVF       INDF+0, 0
-	MOVWF      FARG_UART1_Write_data_+0
-	CALL       _UART1_Write+0
-;Trama.c,35 :: 		}
-L_main11:
-;Trama.c,36 :: 		PORTB = 0x00;
-	CLRF       PORTB+0
-;Trama.c,37 :: 		}
-L_main10:
+;Trama.c,30 :: 		check_sum(Trama);
+	MOVF       main_Trama_L0+0, 0
+	MOVWF      FARG_check_sum_Trama+0
+	CALL       _check_sum+0
 ;Trama.c,38 :: 		}
+L_main11:
+;Trama.c,40 :: 		PORTB = 0x00;
+	CLRF       PORTB+0
+;Trama.c,41 :: 		}
+L_main10:
+;Trama.c,42 :: 		}
 	GOTO       L_main8
-;Trama.c,39 :: 		}
+;Trama.c,43 :: 		}
 L_end_main:
 	GOTO       $+0
 ; end of _main
 
 _start:
 
-;Trama.c,40 :: 		void start() {
-;Trama.c,41 :: 		PORTB=0X00;
+;Trama.c,44 :: 		void start() {
+;Trama.c,45 :: 		PORTB=0X00;
 	CLRF       PORTB+0
-;Trama.c,42 :: 		ANSELH=0X00;
+;Trama.c,46 :: 		ANSELH=0X00;
 	CLRF       ANSELH+0
-;Trama.c,43 :: 		TRISB=0X00;
+;Trama.c,47 :: 		TRISB=0X00;
 	CLRF       TRISB+0
-;Trama.c,44 :: 		UART1_Init(9600);
+;Trama.c,48 :: 		UART1_Init(9600);
 	MOVLW      25
 	MOVWF      SPBRG+0
 	BSF        TXSTA+0, 2
 	CALL       _UART1_Init+0
-;Trama.c,45 :: 		Delay_ms(1);
+;Trama.c,49 :: 		Delay_ms(1);
 	MOVLW      2
 	MOVWF      R12+0
 	MOVLW      75
@@ -295,22 +272,22 @@ L_start15:
 	GOTO       L_start15
 	DECFSZ     R12+0, 1
 	GOTO       L_start15
-;Trama.c,46 :: 		PORTB = 0xFF;
+;Trama.c,50 :: 		PORTB = 0xFF;
 	MOVLW      255
 	MOVWF      PORTB+0
-;Trama.c,47 :: 		PORTB=0X00;
+;Trama.c,51 :: 		PORTB=0X00;
 	CLRF       PORTB+0
-;Trama.c,48 :: 		}
+;Trama.c,52 :: 		}
 L_end_start:
 	RETURN
 ; end of _start
 
 _ascii2hex:
 
-;Trama.c,50 :: 		unsigned char ascii2hex(){
-;Trama.c,51 :: 		unsigned char dato = 0x00;
+;Trama.c,54 :: 		unsigned char ascii2hex(){
+;Trama.c,55 :: 		unsigned char dato = 0x00;
 	CLRF       ascii2hex_dato_L0+0
-;Trama.c,52 :: 		dato = mult(readData())*16;
+;Trama.c,56 :: 		dato = mult(readData())*16;
 	CALL       _readData+0
 	MOVF       R0+0, 0
 	MOVWF      FARG_mult_dato+0
@@ -325,7 +302,7 @@ _ascii2hex:
 	BCF        ascii2hex_dato_L0+0, 0
 	RLF        ascii2hex_dato_L0+0, 1
 	BCF        ascii2hex_dato_L0+0, 0
-;Trama.c,53 :: 		dato += mult(readData());
+;Trama.c,57 :: 		dato += mult(readData());
 	CALL       _readData+0
 	MOVF       R0+0, 0
 	MOVWF      FARG_mult_dato+0
@@ -334,78 +311,140 @@ _ascii2hex:
 	ADDWF      R0+0, 1
 	MOVF       R0+0, 0
 	MOVWF      ascii2hex_dato_L0+0
-;Trama.c,54 :: 		PORTB = 0xFF;
+;Trama.c,58 :: 		PORTB = 0xFF;
 	MOVLW      255
 	MOVWF      PORTB+0
-;Trama.c,55 :: 		return dato;
-;Trama.c,56 :: 		}
+;Trama.c,59 :: 		return dato;
+;Trama.c,60 :: 		}
 L_end_ascii2hex:
 	RETURN
 ; end of _ascii2hex
 
 _mult:
 
-;Trama.c,58 :: 		unsigned char mult(unsigned char dato){
-;Trama.c,59 :: 		if (dato>='A'){
+;Trama.c,62 :: 		unsigned char mult(unsigned char dato){
+;Trama.c,63 :: 		if (dato>='A'){
 	MOVLW      65
 	SUBWF      FARG_mult_dato+0, 0
 	BTFSS      STATUS+0, 0
 	GOTO       L_mult16
-;Trama.c,60 :: 		dato = (dato-55);
+;Trama.c,64 :: 		dato = (dato-55);
 	MOVLW      55
 	SUBWF      FARG_mult_dato+0, 1
-;Trama.c,61 :: 		}else{
+;Trama.c,65 :: 		}else{
 	GOTO       L_mult17
 L_mult16:
-;Trama.c,62 :: 		dato = (dato-48);
+;Trama.c,66 :: 		dato = (dato-48);
 	MOVLW      48
 	SUBWF      FARG_mult_dato+0, 1
-;Trama.c,63 :: 		}
+;Trama.c,67 :: 		}
 L_mult17:
-;Trama.c,64 :: 		return dato;
+;Trama.c,68 :: 		return dato;
 	MOVF       FARG_mult_dato+0, 0
 	MOVWF      R0+0
-;Trama.c,65 :: 		}
+;Trama.c,69 :: 		}
 L_end_mult:
 	RETURN
 ; end of _mult
 
 _readData:
 
-;Trama.c,66 :: 		unsigned char readData(){
-;Trama.c,68 :: 		PORTB = 0x00;
+;Trama.c,70 :: 		unsigned char readData(){
+;Trama.c,72 :: 		PORTB = 0x00;
 	CLRF       PORTB+0
-;Trama.c,69 :: 		Delay_ms(1);
-	MOVLW      2
-	MOVWF      R12+0
-	MOVLW      75
-	MOVWF      R13+0
+;Trama.c,73 :: 		while (1){
 L_readData18:
-	DECFSZ     R13+0, 1
-	GOTO       L_readData18
-	DECFSZ     R12+0, 1
-	GOTO       L_readData18
-;Trama.c,70 :: 		dato = UART1_Read();
+;Trama.c,74 :: 		if(UART1_Data_Ready()){
+	CALL       _UART1_Data_Ready+0
+	MOVF       R0+0, 0
+	BTFSC      STATUS+0, 2
+	GOTO       L_readData20
+;Trama.c,75 :: 		dato = UART1_Read();
 	CALL       _UART1_Read+0
 	MOVF       R0+0, 0
 	MOVWF      readData_dato_L0+0
-;Trama.c,71 :: 		PORTB = 0xFF;
+;Trama.c,76 :: 		PORTB = 0xFF;
 	MOVLW      255
 	MOVWF      PORTB+0
-;Trama.c,72 :: 		Delay_ms(1);
-	MOVLW      2
-	MOVWF      R12+0
-	MOVLW      75
-	MOVWF      R13+0
-L_readData19:
-	DECFSZ     R13+0, 1
-	GOTO       L_readData19
-	DECFSZ     R12+0, 1
-	GOTO       L_readData19
-;Trama.c,73 :: 		return dato;
+;Trama.c,77 :: 		UART1_Write(dato);
+	MOVF       R0+0, 0
+	MOVWF      FARG_UART1_Write_data_+0
+	CALL       _UART1_Write+0
+;Trama.c,78 :: 		return dato;
 	MOVF       readData_dato_L0+0, 0
 	MOVWF      R0+0
-;Trama.c,74 :: 		}
+	GOTO       L_end_readData
+;Trama.c,79 :: 		}
+L_readData20:
+;Trama.c,80 :: 		}
+	GOTO       L_readData18
+;Trama.c,81 :: 		}
 L_end_readData:
 	RETURN
 ; end of _readData
+
+_check_sum:
+
+;Trama.c,83 :: 		unsigned char check_sum(trama_t * Trama){
+;Trama.c,84 :: 		unsigned char checksum = 0x00;
+	CLRF       check_sum_checksum_L0+0
+	CLRF       check_sum_i_L0+0
+;Trama.c,86 :: 		checksum = Trama->size + Trama->addr+Trama->addrh+Trama->type;
+	MOVF       FARG_check_sum_Trama+0, 0
+	MOVWF      FSR
+	MOVF       INDF+0, 0
+	MOVWF      R0+0
+	INCF       FARG_check_sum_Trama+0, 0
+	MOVWF      FSR
+	MOVF       INDF+0, 0
+	ADDWF      R0+0, 0
+	MOVWF      check_sum_checksum_L0+0
+	MOVLW      2
+	ADDWF      FARG_check_sum_Trama+0, 0
+	MOVWF      FSR
+	MOVF       INDF+0, 0
+	ADDWF      check_sum_checksum_L0+0, 1
+	MOVLW      3
+	ADDWF      FARG_check_sum_Trama+0, 0
+	MOVWF      FSR
+	MOVF       INDF+0, 0
+	ADDWF      check_sum_checksum_L0+0, 1
+;Trama.c,87 :: 		for (i=0; i<Trama->size; i++){
+	CLRF       check_sum_i_L0+0
+L_check_sum21:
+	MOVF       FARG_check_sum_Trama+0, 0
+	MOVWF      FSR
+	MOVF       INDF+0, 0
+	MOVWF      R1+0
+	MOVF       R1+0, 0
+	SUBWF      check_sum_i_L0+0, 0
+	BTFSC      STATUS+0, 0
+	GOTO       L_check_sum22
+;Trama.c,88 :: 		checksum += Trama->info[i];
+	MOVLW      4
+	ADDWF      FARG_check_sum_Trama+0, 0
+	MOVWF      R0+0
+	MOVF       check_sum_i_L0+0, 0
+	ADDWF      R0+0, 0
+	MOVWF      FSR
+	MOVF       INDF+0, 0
+	ADDWF      check_sum_checksum_L0+0, 1
+;Trama.c,87 :: 		for (i=0; i<Trama->size; i++){
+	INCF       check_sum_i_L0+0, 1
+;Trama.c,89 :: 		}
+	GOTO       L_check_sum21
+L_check_sum22:
+;Trama.c,90 :: 		checksum = ~checksum + 1;
+	COMF       check_sum_checksum_L0+0, 0
+	MOVWF      R0+0
+	INCF       R0+0, 1
+	MOVF       R0+0, 0
+	MOVWF      check_sum_checksum_L0+0
+;Trama.c,91 :: 		UART1_Write(checksum);
+	MOVF       R0+0, 0
+	MOVWF      FARG_UART1_Write_data_+0
+	CALL       _UART1_Write+0
+;Trama.c,92 :: 		}
+L_end_check_sum:
+	RETURN
+; end of _check_sum

@@ -31,7 +31,7 @@ class MrBurner():
         self.portSelector = self.ui.portSelector
         self.baudSelector = self.ui.baudSelector
         self.hexBox = self.ui.hexBox
-        self.console = self.ui.console
+        self.console = self.ui.console_thread
 
         #Buttons
         self.connectButton = self.ui.connectButton
@@ -42,9 +42,10 @@ class MrBurner():
         self.openFile = self.ui.actionOpen
 
         # Init Managers 
-        self.consoleManager = ConsoleManager(self.console, self.translate)
+        delay(1)
+        self.consoleManager = ConsoleManager(self.console)
         self.serialManager = SerialManager(self.consoleManager, self.ui, self.app)
-        self.fileManager = FileManager(self.hexBox, self.translate, self.consoleManager)
+        self.fileManager = FileManager(self.hexBox, self.ui)
         self.burnerManager = BurnerManager(self.serialManager, self.fileManager, self.ui.progressBar, self.consoleManager)
         self.startSignals()
         self.startThreads()
@@ -67,8 +68,7 @@ class MrBurner():
     def startThreads(self):
         self.startThread(self.serialManager.port_events)
         # self.startThread(self.serialManager.port_selector_observer)
-        # self.startThread(self.consoleManager.console_agent)
-        # self.startThread(self.serialManager.read_port)
+        self.startThread(self.serialManager.read_port)
         # self.startThread(self.burnerManager.burn_task)
 
     

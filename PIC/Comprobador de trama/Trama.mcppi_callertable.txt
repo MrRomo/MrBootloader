@@ -7,9 +7,14 @@ main
 		UART1_Write
 	UART1_Data_Ready
 	readData
+		UART1_Data_Ready
 		UART1_Read
+		UART1_Write
 	ascii2hex
 		readData
+			UART1_Data_Ready
 			UART1_Read
+			UART1_Write
 		mult
-	UART1_Write
+	check_sum
+		UART1_Write

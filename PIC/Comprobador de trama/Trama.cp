@@ -1,12 +1,12 @@
-#line 1 "C:/Users/wwrik/Documents/Microcontroladores 2/Primer Seguimiento/Comprobador de trama/Trama.c"
-#line 1 "c:/users/wwrik/documents/microcontroladores 2/primer seguimiento/comprobador de trama/eeprom_manager.c"
+#line 1 "C:/Users/wwrik/Documents/Code/Micros/MrBootloader/PIC/Comprobador de trama/Trama.c"
+#line 1 "c:/users/wwrik/documents/code/micros/mrbootloader/pic/comprobador de trama/eeprom_manager.c"
 
 typedef struct trama{
  unsigned char size;
  unsigned char addr;
  unsigned char addrh;
  unsigned char type;
- unsigned char * info;
+ unsigned char info[64];
  unsigned char checksum;
 }trama_t;
 
@@ -50,11 +50,12 @@ void write_eeprom(char addrh, char addr, char datoh,char dato){
  while(EECON1.WR);
  INTCON.GIE = 1;
 }
-#line 2 "C:/Users/wwrik/Documents/Microcontroladores 2/Primer Seguimiento/Comprobador de trama/Trama.c"
+#line 2 "C:/Users/wwrik/Documents/Code/Micros/MrBootloader/PIC/Comprobador de trama/Trama.c"
 void start();
 unsigned char ascii2hex();
 unsigned char mult(unsigned char dato);
 unsigned char readData();
+unsigned char check_sum(trama_t * Trama);
 void main() {
  trama_t * Trama;
  unsigned char byteRecv = 0x00;
@@ -69,22 +70,25 @@ void main() {
  if(UART1_Data_Ready()){
  byteRecv = readData();
  if(byteRecv == ':'){
- UART1_Write_Text("Start");
  Trama->size = ascii2hex();
- UART1_Write(Trama->size);
  Trama->addr = ascii2hex();
- UART1_Write(Trama->addr);
  Trama->addrh = ascii2hex();
- UART1_Write(Trama->addrh);
  Trama->type = ascii2hex();
- UART1_Write(Trama->type);
  for (j = 0; j < Trama->size; j++)
  {
- byteRecv = ascii2hex();
+ Trama->info[j] = ascii2hex();
  }
  Trama->checksum = ascii2hex();
- UART1_Write(Trama->checksum);
+ check_sum(Trama);
+
+
+
+
+
+
+
  }
+
  PORTB = 0x00;
  }
  }
@@ -118,9 +122,23 @@ unsigned char mult(unsigned char dato){
 unsigned char readData(){
  unsigned char dato;
  PORTB = 0x00;
- Delay_ms(1);
+ while (1){
+ if(UART1_Data_Ready()){
  dato = UART1_Read();
  PORTB = 0xFF;
- Delay_ms(1);
+ UART1_Write(dato);
  return dato;
+ }
+ }
+}
+
+unsigned char check_sum(trama_t * Trama){
+ unsigned char checksum = 0x00;
+ unsigned char i = 0x00;
+ checksum = Trama->size + Trama->addr+Trama->addrh+Trama->type;
+ for (i=0; i<Trama->size; i++){
+ checksum += Trama->info[i];
+ }
+ checksum = ~checksum + 1;
+ UART1_Write(checksum);
 }

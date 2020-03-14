@@ -12,9 +12,9 @@ class SerialManager:
         self.utils = Utils()
         self.ui = ui
         self.app = app
-        self.portSelector = ui.portSelector
         self.connectButton = ui.connectButton
         self.consoleManager = console
+        self.portSelector = self.ui.portSelector
         self.ports = []
         self.current_port = None
         self.serial_connect = serial.Serial
@@ -22,6 +22,7 @@ class SerialManager:
         self.connection = None
         self.connected = False
         self.translate = QtCore.QCoreApplication.translate
+        self.port_selector = self.ui.port_selector_thread
     
     def get_port_list(self):
         ports = [{'name': i[1], 'port':i[0]} for i in  list(port_list.comports())]
@@ -31,30 +32,22 @@ class SerialManager:
         self.disconnect()
         self.consoleManager.pub('Starting port Events Manager\n')
         while 1:
+            delay(1)
             list_ports = [i for i in self.get_port_list()]
             if (list_ports != self.ports):
                 consoleMsg = self.utils.portObserver(list_ports,self.ports)
                 self.ports = list_ports
-                self.portSelector.clear()
-                for idx, val in enumerate(list_ports):
-                    self.portSelector.addItem("")
-                    item = str(val['name'] + ' - ' + val['port'])
-                    self.portSelector.setItemText(idx, self.translate("MainWindow", item))
-            #     self.consoleManager.pub(consoleMsg)
-            #     self.port_flag = True
-            #     self.portSelector.setCurrentIndex(0)
-            #     self.disconnect()
+                self.port_selector.queue.append(self.ports)                
+                self.consoleManager.pub(consoleMsg)
+                self.port_flag = True
+                self.disconnect()
 
     def port_selector_observer(self): 
-        while 1:
-            if self.port_flag: 
-                self.current_port = self.ports[self.portSelector.currentIndex()]['port'] 
-                self.port_flag = False
-                self.consoleManager.pub('Changing port to {}\n'.format(self.current_port))
-            delay(1)
+        self.current_port = self.ports[self.portSelector.currentIndex()]['port'] 
+        self.consoleManager.pub('Changing port to {}\n'.format(self.current_port))
 
     def change_port(self):
-        self.port_flag = True
+        threading.Thread(target=self.port_selector_observer).start()
             
     def connect(self):
         if(self.connected):
@@ -64,10 +57,7 @@ class SerialManager:
             self.connection = self.serial_connect(self.current_port, baudios, rtscts=True)
             self.connected = True
             self.consoleManager.pub('Connection successfully to {}\n'.format(self.current_port))
-            # self.connectButton.setText(self.ui.translate("MainWindow", 'Disconnect'))
-            # read_port = threading.Thread(target=self.read_port)
-            # read_port.start()
-            # sys.exit(self.app.exec_())
+            self.connectButton.setText(self.ui.translate("MainWindow", 'Disconnect'))
 
     def disconnect(self):
         self.connected = False
@@ -84,19 +74,23 @@ class SerialManager:
                 read = self.connection.read()
                 msg = str(read.hex())
                 # print('{}-{}-{}'.format(str(read),read.hex(),int.from_bytes(read,sys.byteorder)))
-                print('{}-{}'.format(str(read), read.hex()))
+                # print('{}-{}'.format(str(read), read.hex()))
                 self.consoleManager.pub(msg)
                 
     def write_port(self):
         msg = self.ui.sendField.toPlainText()
-        print('Enviando Datos', self.connected, msg)
-        if(self.connected):
-            self.connection.write(msg.encode())
+        if not(self.connected):
+            self.connect()
+        self.consoleManager.pub('\n')
+        print(msg, len(msg), type(msg))
+        threading.Thread(target=self.write_port_byte,  kwargs={'msg':msg},
+                ).start()
     
     def write_port_byte(self, msg):
         print('Enviando Datos', self.connected, msg)
         if(self.connected):
-            self.connection.write(msg.encode())
+            for i in list(msg):
+                self.connection.write(i.encode())
 
            
     def list_ports (self):

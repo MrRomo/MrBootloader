@@ -5,7 +5,7 @@ unsigned char mult(unsigned char dato);
 unsigned char readData();
 unsigned char check_sum(unsigned char * trama);
 void main() {
-     unsigned char trama[25] = {0};
+     unsigned char trama[21] = {0};
      unsigned char size = 0x00;
      unsigned char byteRecv = 0xEE;
      unsigned char j, checksum = 0;
@@ -26,16 +26,17 @@ void main() {
           trama[j] = ascii2hex();
 //          UART1_Write(trama[j]);
         }
-        for(j = 0; j<trama[0]+4; j++)
+        for(j = 0; j<size-1; j++)
         {
           checksum += trama[j];
-//          UART1_Write(trama[j]);
+          UART1_Write(trama[j]);
         }
         checksum = ~checksum + 1;
-//        UART1_Write(trama[trama[0]+5]);
-//        UART1_Write(0xFF);
-//        UART1_Write(checksum);
+        UART1_Write(trama[size-1]);
+        UART1_Write(0xFF);
+        UART1_Write(checksum);
        }
+       checksum = 0;
        PORTB = 0x00;
       }
      }
@@ -59,11 +60,10 @@ unsigned char ascii2hex(){
 }
 unsigned char mult(unsigned char dato){
     if (dato>='A'){
-      dato = (dato-55);
+      return dato-55;
     }else{
-      dato = (dato-48);
+      return dato-48;
     }
-    return dato;
 }
 unsigned char readData(){
    unsigned char dato;

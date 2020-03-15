@@ -73,6 +73,7 @@ class SerialManager:
                 try:
                     read = self.connection.read()
                     msg = str(read.hex()).upper()
+                    print(' [{}] - [{}] '.format(int.from_bytes(read,sys.byteorder), msg))
                     self.consoleManager.pub(msg)
                 except serial.serialutil.SerialException as SerialException:
                     self.disconnect()

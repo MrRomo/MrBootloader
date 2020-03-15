@@ -52,9 +52,7 @@ class MrBurner():
         
 
     def startThread(self, function):
-        thread = threading.Thread(target=function)
-        thread.daemon = True
-        thread.start()
+        threading.Thread(target=function, daemon=True).start()
     
     def startSignals(self):
         self.consoleManager.pub('Starting Signals\n')

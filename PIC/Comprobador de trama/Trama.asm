@@ -311,68 +311,66 @@ _ascii2hex:
 	ADDWF      R0+0, 1
 	MOVF       R0+0, 0
 	MOVWF      ascii2hex_dato_L0+0
-;Trama.c,58 :: 		PORTB = 0xFF;
+;Trama.c,58 :: 		UART1_Write(dato);
+	MOVF       R0+0, 0
+	MOVWF      FARG_UART1_Write_data_+0
+	CALL       _UART1_Write+0
+;Trama.c,59 :: 		PORTB = 0xFF;
 	MOVLW      255
 	MOVWF      PORTB+0
-;Trama.c,59 :: 		return dato;
-;Trama.c,60 :: 		}
+;Trama.c,60 :: 		return dato;
+	MOVF       ascii2hex_dato_L0+0, 0
+	MOVWF      R0+0
+;Trama.c,61 :: 		}
 L_end_ascii2hex:
 	RETURN
 ; end of _ascii2hex
 
 _mult:
 
-;Trama.c,62 :: 		unsigned char mult(unsigned char dato){
-;Trama.c,63 :: 		if (dato>='A'){
+;Trama.c,63 :: 		unsigned char mult(unsigned char dato){
+;Trama.c,64 :: 		if (dato>='A'){
 	MOVLW      65
 	SUBWF      FARG_mult_dato+0, 0
 	BTFSS      STATUS+0, 0
 	GOTO       L_mult16
-;Trama.c,64 :: 		dato = (dato-55);
+;Trama.c,65 :: 		dato = (dato-55);
 	MOVLW      55
 	SUBWF      FARG_mult_dato+0, 1
-;Trama.c,65 :: 		}else{
+;Trama.c,66 :: 		}else{
 	GOTO       L_mult17
 L_mult16:
-;Trama.c,66 :: 		dato = (dato-48);
+;Trama.c,67 :: 		dato = (dato-48);
 	MOVLW      48
 	SUBWF      FARG_mult_dato+0, 1
-;Trama.c,67 :: 		}
+;Trama.c,68 :: 		}
 L_mult17:
-;Trama.c,68 :: 		return dato;
+;Trama.c,69 :: 		return dato;
 	MOVF       FARG_mult_dato+0, 0
 	MOVWF      R0+0
-;Trama.c,69 :: 		}
+;Trama.c,70 :: 		}
 L_end_mult:
 	RETURN
 ; end of _mult
 
 _readData:
 
-;Trama.c,70 :: 		unsigned char readData(){
-;Trama.c,72 :: 		PORTB = 0x00;
+;Trama.c,71 :: 		unsigned char readData(){
+;Trama.c,73 :: 		PORTB = 0x00;
 	CLRF       PORTB+0
-;Trama.c,73 :: 		while (1){
+;Trama.c,74 :: 		while (1){
 L_readData18:
-;Trama.c,74 :: 		if(UART1_Data_Ready()){
+;Trama.c,75 :: 		if(UART1_Data_Ready()){
 	CALL       _UART1_Data_Ready+0
 	MOVF       R0+0, 0
 	BTFSC      STATUS+0, 2
 	GOTO       L_readData20
-;Trama.c,75 :: 		dato = UART1_Read();
+;Trama.c,76 :: 		dato = UART1_Read();
 	CALL       _UART1_Read+0
-	MOVF       R0+0, 0
-	MOVWF      readData_dato_L0+0
-;Trama.c,76 :: 		PORTB = 0xFF;
+;Trama.c,77 :: 		PORTB = 0xFF;
 	MOVLW      255
 	MOVWF      PORTB+0
-;Trama.c,77 :: 		UART1_Write(dato);
-	MOVF       R0+0, 0
-	MOVWF      FARG_UART1_Write_data_+0
-	CALL       _UART1_Write+0
 ;Trama.c,78 :: 		return dato;
-	MOVF       readData_dato_L0+0, 0
-	MOVWF      R0+0
 	GOTO       L_end_readData
 ;Trama.c,79 :: 		}
 L_readData20:

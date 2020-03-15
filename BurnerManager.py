@@ -27,14 +27,4 @@ class BurnerManager:
             print(list(line))
             self.serialManager.write_port_byte(line)
             delay(1.5)
-            self.console.pub('\n')
-                        # progress = i*100/len(code)
-                        # self.progressBar.setValue(progress)
-                    # self.progressBar.setValue(100)
-                    # progress = threading.Thread(target=self.delay_for_progress_bar)
-                    # progress.start()
-
-    # def delay_for_progress_bar(self):
-    #     delay(5)
-    #     self.progressBar.setValue(0)
-
+            self.console.pub('\n-'+str(i) + ' ')

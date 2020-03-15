@@ -47,7 +47,7 @@ class SerialManager:
         self.consoleManager.pub('Changing port to {}\n'.format(self.current_port))
 
     def change_port(self):
-        threading.Thread(target=self.port_selector_observer).start()
+        threading.Thread(target=self.port_selector_observer, daemon=True).start()
             
     def connect(self):
         if(self.connected):
@@ -72,7 +72,7 @@ class SerialManager:
             if self.connected:
                 try:
                     read = self.connection.read()
-                    msg = str(read.hex())
+                    msg = str(read.hex()).upper()
                     self.consoleManager.pub(msg)
                 except serial.serialutil.SerialException as SerialException:
                     self.disconnect()
@@ -84,7 +84,7 @@ class SerialManager:
         msg = self.ui.sendField.toPlainText()
         self.consoleManager.pub('\n')
         print(msg, len(msg), type(msg))
-        threading.Thread(target=self.write_port_byte,  kwargs={'msg':msg},).start()
+        threading.Thread(target=self.write_port_byte,  kwargs={'msg':msg}, daemon=True).start()
     
     def write_port_byte(self, msg):
         print('Enviando Datos', self.connected, msg)

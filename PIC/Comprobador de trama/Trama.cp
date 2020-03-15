@@ -107,6 +107,7 @@ unsigned char ascii2hex(){
  unsigned char dato = 0x00;
  dato = mult(readData())*16;
  dato += mult(readData());
+ UART1_Write(dato);
  PORTB = 0xFF;
  return dato;
 }
@@ -126,7 +127,6 @@ unsigned char readData(){
  if(UART1_Data_Ready()){
  dato = UART1_Read();
  PORTB = 0xFF;
- UART1_Write(dato);
  return dato;
  }
  }

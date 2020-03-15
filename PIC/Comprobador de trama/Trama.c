@@ -52,12 +52,10 @@ void start() {
  }
 
 unsigned char ascii2hex(){
-    unsigned char dato, dato2 = 0x00;
+    unsigned char dato = 0x00;
     dato = mult(readData())*16;
+    dato += mult(readData());
     UART1_Write(dato);
-    dato2 = mult(readData());
-    UART1_Write(dato2);
-    dato += dato2;
     PORTB = 0xFF;
     return dato;
 }

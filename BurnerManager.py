@@ -7,7 +7,7 @@ import sys
 
 class BurnerManager:
 
-    def __init__(self, SerialManager, file, progressBar, console):
+    def __init__(self, SerialManager, file, progressBar, console):  
         self.progressBar = progressBar
         self.serialManager = SerialManager
         self.fileManager = file
@@ -23,8 +23,17 @@ class BurnerManager:
         code = self.fileManager.code
         if not(self.serialManager.connected):
             self.serialManager.connect()
+        res = 'BAD'
         for i, line in enumerate(code):
-            print(list(line))
-            self.serialManager.write_port_byte(line)
-            delay(1.5)
-            self.console.pub('\n-'+str(i) + ' ')
+            # self.serialManager.connection.flushInput()
+            while True:
+                self.serialManager.write_port_byte(line)
+                res = self.serialManager.connection.readline().decode()
+                print (line,res)
+                if (res == 'BAD'):
+                    print('Error de linea')
+                else:
+                    print('Linea enviada correctamente') 
+                    self.console.pub('{} - {}'.format(i,res))
+                    break
+                delay(1)

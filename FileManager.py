@@ -25,5 +25,8 @@ class FileManager():
                 # self.console.pub('File Hex Loaded\n')
 
     def hex_box_agent(self, file):
-        self.code = file.split('\n')
+        code = file.split('\n')
+        last = code[-1]
+        (last == '') if print('codigo completo') else code.pop()
+        self.code = code
         self.hex_box.queue.append(self.code)

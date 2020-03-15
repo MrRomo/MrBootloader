@@ -58,7 +58,7 @@ class SerialManager:
             self.connected = True
             self.consoleManager.pub('Connection successfully to {}\n'.format(self.current_port))
             self.connectButton.setText(self.ui.translate("MainWindow", 'Disconnect'))
-            threading.Thread(target=self.read_port, daemon=True).start()
+            # threading.Thread(target=self.read_port, daemon=True).start()
 
     def disconnect(self):
         self.connected = False

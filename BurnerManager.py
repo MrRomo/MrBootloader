@@ -25,7 +25,7 @@ class BurnerManager:
             self.serialManager.connect()
         res = 'BAD'
         for i, line in enumerate(code):
-            # self.serialManager.connection.flushInput()
+            self.serialManager.connection.flushInput()
             while True:
                 self.serialManager.write_port_byte(line)
                 res = self.serialManager.connection.readline().decode()

@@ -287,6 +287,11 @@
       <height>411</height>
      </rect>
     </property>
+    <property name="font">
+     <font>
+      <pointsize>16</pointsize>
+     </font>
+    </property>
     <item>
      <property name="text">
       <string>hola</string>

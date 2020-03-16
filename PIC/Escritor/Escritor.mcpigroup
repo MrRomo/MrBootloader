@@ -1,0 +1,7 @@
+[PROJECTS]
+Count=3
+Project0=..\Extractor\Extractor.mcppi
+Project1=..\Grabador\Grabador.mcppi
+Project2=Escritor.mcppi
+[ActiveProject]
+Index=2

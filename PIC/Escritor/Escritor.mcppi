@@ -6,7 +6,7 @@ Value=0
 [BUILD_TYPE]
 Value=0
 [ACTIVE_TAB]
-Value=..\Escritor\Escritor.c
+Value=Escritor.c
 [USE_EEPROM]
 Value=0
 [USE_HEAP]
@@ -16,7 +16,7 @@ Value=0
 [EEPROM_DEFINITION]
 Value=
 [FILES]
-File0=Grabador.c
+File0=Escritor.c
 Count=1
 [BINARIES]
 Count=0
@@ -24,8 +24,10 @@ Count=0
 Count=0
 ActiveImageIndex=-1
 [OPENED_FILES]
-File0=Grabador.c
-Count=1
+File0=Escritor.c
+File1=uart_manager.c
+File2=eeprom_manager.c
+Count=3
 [EEPROM]
 Count=0
 [ACTIVE_COMMENTS_FILES]
@@ -37,25 +39,21 @@ Count=0
 [HEADER_PATH]
 Count=0
 [HEADERS]
-Count=0
+File0=uart_manager.h
+File1=eeprom_manager.h
+Count=2
 [PLDS]
 Count=0
 [Useses]
-File0=UART
-File1=Conversions
-File2=C_String
+File0=Conversions
+File1=C_String
+File2=UART
 File3=Software_UART
 Count=4
 [EXPANDED_NODES]
-0=Grabador.mcppi
 1=Sources
-15=Escritor.mcppi
-16=Sources
-17=Escritor
-19=Header Files
-20=Escritor
-Count=7
+Count=1
 [LIB_EXPANDED_NODES]
 0=mikroE Libraries
 1=System Libraries
-Count=2
+Count=3

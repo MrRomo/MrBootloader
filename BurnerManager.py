@@ -28,14 +28,12 @@ class BurnerManager:
             self.serialManager.connection.flushInput()
             while True:
                 self.serialManager.write_port_byte(line)
-                res = self.serialManager.connection.readline().decode()
-                print (line,res)
-                if (res == 'BAD\n'):
+                res = self.serialManager.connection.readline().decode().split('\n')[0]
+                print (i, line,res)
+                if (res == 'BAD'):
                     print('Error de linea', line)
-                    self.console.pub('Error de transmisión - Reenviando...\n')
+                    self.console.pub('{} - {} - Error de transmisión - Reenviando...\n'.format(i,res))
                 else:
-                    print('Linea enviada correctamente') 
-                    self.console.pub('{} - {}'.format(i,res))
+                    self.console.pub('{} - {} - Linea enviada correctamente. \n'.format(i,res))
                     break
-                delay(1) 
                 

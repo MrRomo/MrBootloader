@@ -260,8 +260,8 @@ L_end_check_sum:
 
 _main:
 
-;Escritor.c,6 :: 		void main() {
-;Escritor.c,7 :: 		unsigned char * trama[21] = {0};
+;Escritor.c,9 :: 		void main() {
+;Escritor.c,10 :: 		unsigned char * trama[21] = {0};
 	CLRF       main_trama_L0+0
 	CLRF       main_trama_L0+1
 	CLRF       main_trama_L0+2
@@ -283,34 +283,34 @@ _main:
 	CLRF       main_trama_L0+18
 	CLRF       main_trama_L0+19
 	CLRF       main_trama_L0+20
-;Escritor.c,8 :: 		unsigned char size = 0x00;
+;Escritor.c,11 :: 		unsigned char size = 0x00;
 	CLRF       main_size_L0+0
 	CLRF       main_j_L0+0
-;Escritor.c,12 :: 		start();
+;Escritor.c,15 :: 		start();
 	CALL       _start+0
-;Escritor.c,13 :: 		while (1) {
+;Escritor.c,16 :: 		while (1) {
 L_main12:
-;Escritor.c,15 :: 		if(UART1_Data_Ready()){
+;Escritor.c,17 :: 		if(UART1_Data_Ready()){
 	CALL       _UART1_Data_Ready+0
 	MOVF       R0+0, 0
 	BTFSC      STATUS+0, 2
 	GOTO       L_main14
-;Escritor.c,16 :: 		byteRecv = readData();
+;Escritor.c,18 :: 		byteRecv = readData();
 	CALL       _readData+0
-;Escritor.c,17 :: 		if(byteRecv == ':'){
+;Escritor.c,19 :: 		if(byteRecv == ':'){
 	MOVF       R0+0, 0
 	XORLW      58
 	BTFSS      STATUS+0, 2
 	GOTO       L_main15
-;Escritor.c,18 :: 		trama[0] = ascii2hex();
+;Escritor.c,20 :: 		trama[0] = ascii2hex();
 	CALL       _ascii2hex+0
 	MOVF       R0+0, 0
 	MOVWF      main_trama_L0+0
-;Escritor.c,19 :: 		size = trama[0] + 0x05;
+;Escritor.c,21 :: 		size = trama[0] + 0x05;
 	MOVLW      5
 	ADDWF      R0+0, 0
 	MOVWF      main_size_L0+0
-;Escritor.c,20 :: 		for(j = 1; j<size; j++){
+;Escritor.c,22 :: 		for(j = 1; j<size; j++){
 	MOVLW      1
 	MOVWF      main_j_L0+0
 L_main16:
@@ -318,7 +318,7 @@ L_main16:
 	SUBWF      main_j_L0+0, 0
 	BTFSC      STATUS+0, 0
 	GOTO       L_main17
-;Escritor.c,21 :: 		trama[j] = ascii2hex();
+;Escritor.c,23 :: 		trama[j] = ascii2hex();
 	MOVF       main_j_L0+0, 0
 	ADDLW      main_trama_L0+0
 	MOVWF      FLOC__main+0
@@ -327,21 +327,24 @@ L_main16:
 	MOVWF      FSR
 	MOVF       R0+0, 0
 	MOVWF      INDF+0
-;Escritor.c,20 :: 		for(j = 1; j<size; j++){
+;Escritor.c,22 :: 		for(j = 1; j<size; j++){
 	INCF       main_j_L0+0, 1
-;Escritor.c,22 :: 		}
+;Escritor.c,24 :: 		}
 	GOTO       L_main16
 L_main17:
-;Escritor.c,23 :: 		check = check_sum(trama);
+;Escritor.c,25 :: 		check = check_sum(trama);
 	MOVLW      main_trama_L0+0
 	MOVWF      FARG_check_sum_trama+0
 	CALL       _check_sum+0
-;Escritor.c,24 :: 		check ? write_intel(trama) : UART1_Write_Text("BAD\n");
+;Escritor.c,26 :: 		check ? write_intel(trama, trama[0]+0x04) : UART1_Write_Text("BAD\n");
 	MOVF       R0+0, 0
 	BTFSC      STATUS+0, 2
 	GOTO       L_main19
 	MOVLW      main_trama_L0+0
 	MOVWF      FARG_write_intel_trama+0
+	MOVLW      4
+	ADDWF      main_trama_L0+0, 0
+	MOVWF      FARG_write_intel_size+0
 	CALL       _write_intel+0
 	GOTO       L_main20
 L_main19:
@@ -349,82 +352,73 @@ L_main19:
 	MOVWF      FARG_UART1_Write_Text_uart_text+0
 	CALL       _UART1_Write_Text+0
 L_main20:
-;Escritor.c,25 :: 		PORTB = 0x00;
-	CLRF       PORTB+0
-;Escritor.c,26 :: 		}
-L_main15:
-;Escritor.c,27 :: 		}
-L_main14:
-;Escritor.c,28 :: 		}
-	GOTO       L_main12
+;Escritor.c,27 :: 		for(j = 0; j<21; j++){
+	CLRF       main_j_L0+0
+L_main21:
+	MOVLW      21
+	SUBWF      main_j_L0+0, 0
+	BTFSC      STATUS+0, 0
+	GOTO       L_main22
+;Escritor.c,28 :: 		trama[j] = 0x00;
+	MOVF       main_j_L0+0, 0
+	ADDLW      main_trama_L0+0
+	MOVWF      FSR
+	CLRF       INDF+0
+;Escritor.c,27 :: 		for(j = 0; j<21; j++){
+	INCF       main_j_L0+0, 1
 ;Escritor.c,29 :: 		}
+	GOTO       L_main21
+L_main22:
+;Escritor.c,30 :: 		j = 0;
+	CLRF       main_j_L0+0
+;Escritor.c,31 :: 		PORTB = 0x00;
+	CLRF       PORTB+0
+;Escritor.c,32 :: 		}
+L_main15:
+;Escritor.c,33 :: 		}
+L_main14:
+;Escritor.c,34 :: 		}
+	GOTO       L_main12
+;Escritor.c,35 :: 		}
 L_end_main:
 	GOTO       $+0
 ; end of _main
 
 _write_intel:
 
-;Escritor.c,30 :: 		void write_intel(unsigned char * trama){
-;Escritor.c,32 :: 		unsigned char addrh  = trama[1]+0x02;
+;Escritor.c,36 :: 		void write_intel(unsigned char * trama, unsigned char size){
+;Escritor.c,41 :: 		unsigned char i = 0x00;
+	CLRF       write_intel_i_L0+0
+;Escritor.c,42 :: 		PORTB = 0xFF;
+	MOVLW      255
+	MOVWF      PORTB+0
+;Escritor.c,43 :: 		for(i = 4; i<size; i+=2){
+	MOVLW      4
+	MOVWF      write_intel_i_L0+0
+L_write_intel24:
+	MOVF       FARG_write_intel_size+0, 0
+	SUBWF      write_intel_i_L0+0, 0
+	BTFSC      STATUS+0, 0
+	GOTO       L_write_intel25
+;Escritor.c,44 :: 		delay_ms(1);
+	MOVLW      2
+	MOVWF      R12+0
+	MOVLW      75
+	MOVWF      R13+0
+L_write_intel27:
+	DECFSZ     R13+0, 1
+	GOTO       L_write_intel27
+	DECFSZ     R12+0, 1
+	GOTO       L_write_intel27
+;Escritor.c,45 :: 		write_eeprom(trama[1], trama[2], trama[i+1], trama[i]);
 	INCF       FARG_write_intel_trama+0, 0
 	MOVWF      FSR
-	MOVLW      2
-	ADDWF      INDF+0, 0
-	MOVWF      R0+0
-	CLRF       R0+1
-	BTFSC      STATUS+0, 0
-	INCF       R0+1, 1
-	MOVF       R0+0, 0
-	MOVWF      write_intel_addrh_L0+0
-;Escritor.c,33 :: 		unsigned char addr = trama[2];
+	MOVF       INDF+0, 0
+	MOVWF      FARG_write_eeprom_addrh+0
 	MOVLW      2
 	ADDWF      FARG_write_intel_trama+0, 0
 	MOVWF      FSR
 	MOVF       INDF+0, 0
-	MOVWF      write_intel_addr_L0+0
-;Escritor.c,34 :: 		unsigned int size = trama[0]+0x04;
-	MOVF       FARG_write_intel_trama+0, 0
-	MOVWF      FSR
-	MOVLW      4
-	ADDWF      INDF+0, 0
-	MOVWF      write_intel_size_L0+0
-	CLRF       write_intel_size_L0+1
-	BTFSC      STATUS+0, 0
-	INCF       write_intel_size_L0+1, 1
-;Escritor.c,35 :: 		unsigned char i = 0;
-	CLRF       write_intel_i_L0+0
-;Escritor.c,37 :: 		PORTB = 0xFF;
-	MOVLW      255
-	MOVWF      PORTB+0
-;Escritor.c,38 :: 		Delay_ms(100);
-	MOVLW      130
-	MOVWF      R12+0
-	MOVLW      221
-	MOVWF      R13+0
-L_write_intel21:
-	DECFSZ     R13+0, 1
-	GOTO       L_write_intel21
-	DECFSZ     R12+0, 1
-	GOTO       L_write_intel21
-	NOP
-	NOP
-;Escritor.c,39 :: 		for(i = 4; i<size; i+=2){
-	MOVLW      4
-	MOVWF      write_intel_i_L0+0
-L_write_intel22:
-	MOVF       write_intel_size_L0+1, 0
-	SUBLW      0
-	BTFSS      STATUS+0, 2
-	GOTO       L__write_intel36
-	MOVF       write_intel_size_L0+0, 0
-	SUBWF      write_intel_i_L0+0, 0
-L__write_intel36:
-	BTFSC      STATUS+0, 0
-	GOTO       L_write_intel23
-;Escritor.c,40 :: 		write_eeprom(addrh, addr, trama[i+1], trama[i]);
-	MOVF       write_intel_addrh_L0+0, 0
-	MOVWF      FARG_write_eeprom_addrh+0
-	MOVF       write_intel_addr_L0+0, 0
 	MOVWF      FARG_write_eeprom_addr+0
 	MOVF       write_intel_i_L0+0, 0
 	ADDLW      1
@@ -443,80 +437,111 @@ L__write_intel36:
 	MOVF       INDF+0, 0
 	MOVWF      FARG_write_eeprom_dato+0
 	CALL       _write_eeprom+0
-;Escritor.c,41 :: 		if(addr == 0xFF) addrh+=0x01;
-	MOVF       write_intel_addr_L0+0, 0
+;Escritor.c,46 :: 		if(trama[2] == 0xFF) trama[1]+=0x01;
+	MOVLW      2
+	ADDWF      FARG_write_intel_trama+0, 0
+	MOVWF      FSR
+	MOVF       INDF+0, 0
 	XORLW      255
 	BTFSS      STATUS+0, 2
-	GOTO       L_write_intel25
-	INCF       write_intel_addrh_L0+0, 1
-L_write_intel25:
-;Escritor.c,42 :: 		addr+=0x01;
-	INCF       write_intel_addr_L0+0, 1
-;Escritor.c,43 :: 		delay_ms(10);
-	MOVLW      13
+	GOTO       L_write_intel28
+	INCF       FARG_write_intel_trama+0, 0
+	MOVWF      R1+0
+	MOVF       R1+0, 0
+	MOVWF      FSR
+	INCF       INDF+0, 0
+	MOVWF      R0+0
+	MOVF       R1+0, 0
+	MOVWF      FSR
+	MOVF       R0+0, 0
+	MOVWF      INDF+0
+L_write_intel28:
+;Escritor.c,47 :: 		trama[2]+=0x01;
+	MOVLW      2
+	ADDWF      FARG_write_intel_trama+0, 0
+	MOVWF      R1+0
+	MOVF       R1+0, 0
+	MOVWF      FSR
+	INCF       INDF+0, 0
+	MOVWF      R0+0
+	MOVF       R1+0, 0
+	MOVWF      FSR
+	MOVF       R0+0, 0
+	MOVWF      INDF+0
+;Escritor.c,48 :: 		if(dat == 0xFF) dath+=0x01;
+	MOVF       _dat+0, 0
+	XORLW      255
+	BTFSS      STATUS+0, 2
+	GOTO       L_write_intel29
+	INCF       _dath+0, 1
+L_write_intel29:
+;Escritor.c,49 :: 		dat+=0x01;
+	INCF       _dat+0, 1
+;Escritor.c,50 :: 		delay_ms(1);
+	MOVLW      2
 	MOVWF      R12+0
-	MOVLW      251
+	MOVLW      75
 	MOVWF      R13+0
-L_write_intel26:
+L_write_intel30:
 	DECFSZ     R13+0, 1
-	GOTO       L_write_intel26
+	GOTO       L_write_intel30
 	DECFSZ     R12+0, 1
-	GOTO       L_write_intel26
-	NOP
-	NOP
-;Escritor.c,39 :: 		for(i = 4; i<size; i+=2){
+	GOTO       L_write_intel30
+;Escritor.c,43 :: 		for(i = 4; i<size; i+=2){
 	MOVLW      2
 	ADDWF      write_intel_i_L0+0, 1
-;Escritor.c,44 :: 		}
-	GOTO       L_write_intel22
-L_write_intel23:
-;Escritor.c,45 :: 		UART1_Write_Text("OK\n");
+;Escritor.c,51 :: 		}
+	GOTO       L_write_intel24
+L_write_intel25:
+;Escritor.c,52 :: 		i = 0;
+	CLRF       write_intel_i_L0+0
+;Escritor.c,53 :: 		UART1_Write_Text("OK\n");
 	MOVLW      ?lstr2_Escritor+0
 	MOVWF      FARG_UART1_Write_Text_uart_text+0
 	CALL       _UART1_Write_Text+0
-;Escritor.c,46 :: 		}
+;Escritor.c,54 :: 		}
 L_end_write_intel:
 	RETURN
 ; end of _write_intel
 
 _start:
 
-;Escritor.c,48 :: 		void start() {
-;Escritor.c,49 :: 		ANSELH=0X00;
+;Escritor.c,56 :: 		void start() {
+;Escritor.c,57 :: 		ANSELH=0X00;
 	CLRF       ANSELH+0
-;Escritor.c,50 :: 		TRISB=0X00;
+;Escritor.c,58 :: 		TRISB=0X00;
 	CLRF       TRISB+0
-;Escritor.c,51 :: 		PORTB=0XFF;
+;Escritor.c,59 :: 		PORTB=0XFF;
 	MOVLW      255
 	MOVWF      PORTB+0
-;Escritor.c,52 :: 		UART1_Init(9600);
+;Escritor.c,60 :: 		UART1_Init(9600);
 	MOVLW      25
 	MOVWF      SPBRG+0
 	BSF        TXSTA+0, 2
 	CALL       _UART1_Init+0
-;Escritor.c,53 :: 		Delay_ms(1000);
+;Escritor.c,61 :: 		Delay_ms(1000);
 	MOVLW      6
 	MOVWF      R11+0
 	MOVLW      19
 	MOVWF      R12+0
 	MOVLW      173
 	MOVWF      R13+0
-L_start27:
+L_start31:
 	DECFSZ     R13+0, 1
-	GOTO       L_start27
+	GOTO       L_start31
 	DECFSZ     R12+0, 1
-	GOTO       L_start27
+	GOTO       L_start31
 	DECFSZ     R11+0, 1
-	GOTO       L_start27
+	GOTO       L_start31
 	NOP
 	NOP
-;Escritor.c,54 :: 		PORTB=0X00;
+;Escritor.c,62 :: 		PORTB=0X00;
 	CLRF       PORTB+0
-;Escritor.c,55 :: 		UART1_Write_Text("MrBurner Ready");
+;Escritor.c,63 :: 		UART1_Write_Text("MrBurner Ready");
 	MOVLW      ?lstr3_Escritor+0
 	MOVWF      FARG_UART1_Write_Text_uart_text+0
 	CALL       _UART1_Write_Text+0
-;Escritor.c,56 :: 		}
+;Escritor.c,64 :: 		}
 L_end_start:
 	RETURN
 ; end of _start

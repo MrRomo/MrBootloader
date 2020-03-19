@@ -31,6 +31,8 @@ adcs1_bit
 add_32x32_fp
 adden
 adden_bit
+addr
+addrh
 adfm
 adfm_bit
 adie
@@ -246,8 +248,10 @@ d_a_bit
 d_bit
 d_not_a
 d_not_a_bit
+dat
 data_address
 data_address_bit
+dath
 dc
 dc_bit
 dc1b0

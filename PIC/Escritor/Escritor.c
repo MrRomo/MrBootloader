@@ -1,8 +1,11 @@
 #include "eeprom_manager.c"
 #include "uart_manager.c"
 void start();
-void write_intel(unsigned char * trama);
-
+void write_intel(unsigned char * trama, unsigned char size);
+unsigned char addrh  = 0x05;
+unsigned char addr = 0x00;
+unsigned char dath  = 0x00;
+unsigned char dat = 0xEE;
 void main() {
    unsigned char * trama[21] = {0};
    unsigned char size = 0x00;
@@ -11,7 +14,6 @@ void main() {
    unsigned char check;
    start();
    while (1) {
-
     if(UART1_Data_Ready()){
      byteRecv = readData();
      if(byteRecv == ':'){
@@ -21,26 +23,33 @@ void main() {
         trama[j] = ascii2hex();
       }
       check = check_sum(trama);
-      check ? write_intel(trama) : UART1_Write_Text("BAD\n");
+      check ? write_intel(trama, trama[0]+0x04) : UART1_Write_Text("BAD\n");
+      for(j = 0; j<21; j++){
+       trama[j] = 0x00;
+      }
+      j = 0;
       PORTB = 0x00;
      }
     }
    }
 }
-void write_intel(unsigned char * trama){
+void write_intel(unsigned char * trama, unsigned char size){
 
-  unsigned char addrh  = trama[1]+0x02;
-  unsigned char addr = trama[2];
-  unsigned int size = trama[0]+0x04;
+  // unsigned char addrh  = trama[1]+0x02;
+  // unsigned char addr = trama[2];
+//  unsigned int size = trama[0]+0x04;
   unsigned char i = 0x00;
   PORTB = 0xFF;
-  Delay_ms(100);
   for(i = 4; i<size; i+=2){
-    write_eeprom(addrh, addr, trama[i+1], trama[i]);
-    if(addr == 0xFF) addrh+=0x01;
-    addr+=0x01;
-    delay_ms(10);
+    delay_ms(1);
+    write_eeprom(trama[1], trama[2], trama[i+1], trama[i]);
+    if(trama[2] == 0xFF) trama[1]+=0x01;
+    trama[2]+=0x01;
+    if(dat == 0xFF) dath+=0x01;
+    dat+=0x01;
+    delay_ms(1);
   }
+  i = 0;
   UART1_Write_Text("OK\n");
 }
 

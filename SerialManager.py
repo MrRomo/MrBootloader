@@ -54,7 +54,7 @@ class SerialManager:
             self.disconnect()
         else:
             baudios = int(self.ui.baudSelector.currentText())
-            self.connection = self.serial_connect(self.current_port, baudios, rtscts=True)
+            self.connection = self.serial_connect(self.current_port, baudios, rtscts=True, timeout = 1)
             self.connected = True
             self.consoleManager.pub('Connection successfully to {}\n'.format(self.current_port))
             self.connectButton.setText(self.ui.translate("MainWindow", 'Disconnect'))
@@ -88,7 +88,6 @@ class SerialManager:
         threading.Thread(target=self.write_port_byte,  kwargs={'msg':msg}, daemon=True).start()
     
     def write_port_byte(self, msg):
-        print('Enviando Datos', self.connected, msg)
         if not(self.connected):
             self.connect()
         for i in list(msg):

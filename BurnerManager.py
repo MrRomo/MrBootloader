@@ -4,6 +4,7 @@ from time import sleep as delay
 from Utils import Utils
 import threading
 import sys
+from collections import deque as dq 
 
 class BurnerManager:
 
@@ -26,14 +27,28 @@ class BurnerManager:
         res = 'BAD'
         for i, line in enumerate(code):
             self.serialManager.connection.flushInput()
+            self.serialManager.write_port_byte(line)
             while True:
-                self.serialManager.write_port_byte(line)
                 res = self.serialManager.connection.readline().decode().split('\n')[0]
-                print (i, line,res)
+                code = ''
                 if (res == 'BAD'):
-                    print('Error de linea', line)
-                    self.console.pub('{} - {} - Error de transmisión - Reenviando...\n'.format(i,res))
-                else:
-                    self.console.pub('{} - {} - Linea enviada correctamente. \n'.format(i,res))
+                    self.console.pub('{} - {} - Error de transmisión - Reenviando...\n'.format(i,line))
+                    delay(1)
+                    self.serialManager.connection.flushInput()
+                    self.serialManager.write_port_byte(line)
+                elif (res == 'OK'):
+                    self.console.pub('{} - {} - Linea enviada correctamente. \n'.format(i,line))
+                    print('{} - {} - Linea enviada correctamente.'.format(i,res))
+                    size = int(line[1:3],16)+5
+                    print('Size of trama:',size)
+                    for l in range(size):
+                        temp = self.serialManager.connection.read()
+                        code += temp.hex()
+                    self.console.pub('{} - :{} - Linea enviada correctamente. \n'.format(i,code.upper()))
+                    code = res = ''
                     break
+                print('-{}-'.format(res))
+                delay(1)
+
+
                 

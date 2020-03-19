@@ -85,7 +85,7 @@ unsigned char check_sum(unsigned char * trama) {
 }
 #line 3 "C:/Users/wwrik/Documents/Code/Micros/MrBootloader/PIC/Escritor/Escritor.c"
 void start();
-void write_intel(unsigned char * trama, unsigned char size);
+void write_intel(unsigned char * trama);
 unsigned char addrh = 0x05;
 unsigned char addr = 0x00;
 unsigned char dath = 0x00;
@@ -107,8 +107,10 @@ void main() {
  trama[j] = ascii2hex();
  }
  check = check_sum(trama);
- check ? write_intel(trama, trama[0]+0x04) : UART1_Write_Text("BAD\n");
- for(j = 0; j<21; j++){
+ check ? write_intel(trama) : UART1_Write_Text("BAD\n");
+ j = 0;
+ for(j = 0; j<size; j++){
+ UART1_Write(trama[j]);
  trama[j] = 0x00;
  }
  j = 0;
@@ -117,20 +119,14 @@ void main() {
  }
  }
 }
-void write_intel(unsigned char * trama, unsigned char size){
-
-
-
-
+void write_intel(unsigned char * trama){
  unsigned char i = 0x00;
  PORTB = 0xFF;
- for(i = 4; i<size; i+=2){
+ for(i = 0; i<trama[0]; i+=2){
  delay_ms(1);
- write_eeprom(trama[1], trama[2], trama[i+1], trama[i]);
+ write_eeprom(trama[1], trama[2], trama[i+0x05], trama[i+0x04]);
  if(trama[2] == 0xFF) trama[1]+=0x01;
  trama[2]+=0x01;
- if(dat == 0xFF) dath+=0x01;
- dat+=0x01;
  delay_ms(1);
  }
  i = 0;

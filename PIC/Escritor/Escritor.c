@@ -26,7 +26,7 @@ void main() {
       check ? write_intel(trama) : UART1_Write_Text("BAD\n");
       j = 0;
       for(j = 0; j<size; j++){
-       UART1_Write(trama[j]);
+      //  UART1_Write(trama[j]);
        trama[j] = 0x00;
       }
       j = 0;
@@ -38,15 +38,16 @@ void main() {
 void write_intel(unsigned char * trama){
   unsigned char i = 0x00;
   PORTB = 0xFF;
+  UART1_Write_Text("OK\n");
   for(i = 0; i<trama[0]; i+=2){
     delay_ms(1);
     write_eeprom(trama[1], trama[2], trama[i+0x05], trama[i+0x04]);
+    read_eeprom(trama[1], trama[2]);
+    delay_ms(1);
     if(trama[2] == 0xFF) trama[1]+=0x01;
     trama[2]+=0x01;
-    delay_ms(1);
   }
   i = 0;
-  UART1_Write_Text("OK\n");
 }
 
 void start() {

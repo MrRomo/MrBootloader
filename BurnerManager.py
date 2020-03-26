@@ -32,21 +32,26 @@ class BurnerManager:
                 res = self.serialManager.connection.readline().decode().split('\n')[0]
                 code = ''
                 if (res == 'BAD'):
-                    self.console.pub('{} - {} - Error de transmisión - Reenviando...\n'.format(i,line))
-                    delay(1)
+                    self.console.pub('{} - {} - {} Transmition Error - Resend...\n'.format(i,line,res))
                     self.serialManager.connection.flushInput()
                     self.serialManager.write_port_byte(line)
                 elif (res == 'OK'):
-                    self.console.pub('{} - {} - Linea enviada correctamente. \n'.format(i,line))
-                    print('{} - {} - Linea enviada correctamente.'.format(i,res))
-                    size = int(line[1:3],16)+5
+                    self.console.pub('{} - {} - {} Line send correctly. \n'.format(i,line,res))
+                    print('{} - {} - Line send correctly.'.format(i,res))
+                    size = int(line[1:3],16)//2
                     print('Size of trama:',size)
                     for l in range(size):
-                        temp = self.serialManager.connection.read()
-                        code += temp.hex()
-                    self.console.pub('{} - :{} - Linea enviada correctamente. \n'.format(i,code.upper()))
-                    code = res = ''
+                        for j in range(2):
+                            for z in range(4):
+                                temp = self.serialManager.connection.read()
+                                code += temp.hex()
+                                if(z==1): code += '->'    
+                            code += ' '    
+                        code += ' '
+                        self.console.pub('{} - Line write on: {} \n'.format(i, code.upper()))
+                        code = res = ''
                     break
+                    # code = ' '.join([code[g:g+4] for g in range(0, len(code), 4)])
                 print('-{}-'.format(res))
                 delay(1)
 

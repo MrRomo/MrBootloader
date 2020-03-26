@@ -16,9 +16,11 @@ main
 		mult
 	check_sum
 	write_intel
-		write_eeprom
 		UART1_Write_Text
+			UART1_Write
+		write_eeprom
+			UART1_Write
+		read_eeprom
 			UART1_Write
 	UART1_Write_Text
 		UART1_Write
-	UART1_Write

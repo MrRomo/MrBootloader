@@ -22,5 +22,7 @@ main
 			UART1_Write
 		read_eeprom
 			UART1_Write
+			UART1_Write_Text
+				UART1_Write
 	UART1_Write_Text
 		UART1_Write

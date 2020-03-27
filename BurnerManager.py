@@ -47,13 +47,12 @@ class BurnerManager:
                                 code += temp.hex()
                                 if(z==1): code += '->'    
                             code += ' '    
-                        code += ' '
+                        code += 'OK'  if (code.split(' ')[0] == code.split(' ')[1]) else 'BAD'
                         self.console.pub('{} - Line write on: {} \n'.format(i, code.upper()))
                         code = res = ''
+                else:
+                    print('-{}-'.format(res))   
+                    self.console.pub('Write complete \n')
                     break
-                    # code = ' '.join([code[g:g+4] for g in range(0, len(code), 4)])
-                print('-{}-'.format(res))
-                delay(1)
-
 
                 

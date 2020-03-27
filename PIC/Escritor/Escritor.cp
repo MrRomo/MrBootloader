@@ -1,11 +1,13 @@
 #line 1 "C:/Users/wwrik/Documents/Code/Micros/MrBootloader/PIC/Escritor/Escritor.c"
 #line 1 "c:/users/wwrik/documents/code/micros/mrbootloader/pic/escritor/eeprom_manager.c"
-void read_eeprom( char addrh, char addr) {
- unsigned int response;
- EEADR = addr;
+void read_eeprom( unsigned char addrh, unsigned char addr) {
+ unsigned char dataWrited[2] = {0};
  EEADRH = addrh;
- EEDAT = 0X00;
+ EEADR = addr;
  EEDATH = 0X00;
+ EEDAT = 0X00;
+ UART1_Write(EEADRH);
+ UART1_Write(EEADR);
  EECON1.EEPGD = 1;
  EECON1.RD = 1;
  asm{
@@ -13,17 +15,20 @@ void read_eeprom( char addrh, char addr) {
  nop
  }
  while(EECON1.RD);
- UART1_Write(addrh);
- UART1_Write(addr);
- UART1_Write(EEDATH);
- UART1_Write(EEDAT);
+ dataWrited[0]=EEDATH;
+ dataWrited[1]=EEDAT;
+ UART1_Write_Text(dataWrited);
 }
 
-void write_eeprom(char addrh,char addr, char datoh ,char dato){
- EEADR = addr;
+void write_eeprom(unsigned char addrh,unsigned char addr, unsigned char datoh ,unsigned char dato){
  EEADRH = addrh;
- EEDATA = dato;
+ EEADR = addr;
  EEDATH = datoh;
+ EEDATA = dato;
+ UART1_Write(EEADRH);
+ UART1_Write(EEADR);
+ UART1_Write(EEDATH);
+ UART1_Write(EEDATA);
  EECON1.EEPGD = 1;
  EECON1.WREN = 1;
  INTCON.GIE = 0;
@@ -36,10 +41,6 @@ void write_eeprom(char addrh,char addr, char datoh ,char dato){
  }
  while(EECON1.WR);
  INTCON.GIE = 1;
- UART1_Write(addrh);
- UART1_Write(addr);
- UART1_Write(datoh);
- UART1_Write(dato);
 }
 #line 1 "c:/users/wwrik/documents/code/micros/mrbootloader/pic/escritor/uart_manager.c"
 
@@ -65,22 +66,16 @@ unsigned char ascii2hex(){
  unsigned char dato = 0x00;
  dato = mult(readData())<<4;
  dato += mult(readData());
-
  PORTB = 0xFF;
  return dato;
 }
 unsigned char check_sum(unsigned char * trama) {
  unsigned char checksum, j = 0x00;
  unsigned char size = trama[0]+0x04;
- for(j = 0; j<size; j++)
- {
+ for(j = 0; j<size; j++){
  checksum += trama[j];
-
  }
  checksum = ~checksum + 1;
-
-
-
  j = (checksum == trama[size]);
  checksum = 0;
  return j;
@@ -111,8 +106,7 @@ void main() {
  check = check_sum(trama);
  check ? write_intel(trama) : UART1_Write_Text("BAD\n");
  j = 0;
- for(j = 0; j<size; j++){
-
+ for(j = 0; j<21; j++){
  trama[j] = 0x00;
  }
  j = 0;
@@ -126,12 +120,13 @@ void write_intel(unsigned char * trama){
  PORTB = 0xFF;
  UART1_Write_Text("OK\n");
  for(i = 0; i<trama[0]; i+=2){
- delay_ms(1);
+ delay_us(10);
  write_eeprom(trama[1], trama[2], trama[i+0x05], trama[i+0x04]);
+ delay_us(10);
  read_eeprom(trama[1], trama[2]);
+ delay_us(10);
  if(trama[2] == 0xFF) trama[1]+=0x01;
  trama[2]+=0x01;
- delay_ms(1);
  }
  i = 0;
 }

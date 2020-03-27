@@ -1,110 +1,115 @@
 
 _read_eeprom:
 
-;eeprom_manager.c,1 :: 		void read_eeprom( char addrh, char addr) {
-;eeprom_manager.c,3 :: 		EEADR = addr;
-	MOVF       FARG_read_eeprom_addr+0, 0
-	MOVWF      EEADR+0
-;eeprom_manager.c,4 :: 		EEADRH = addrh;
+;eeprom_manager.c,1 :: 		void read_eeprom( unsigned char addrh, unsigned char addr) {
+;eeprom_manager.c,2 :: 		unsigned char dataWrited[2] = {0};
+	CLRF       read_eeprom_dataWrited_L0+0
+	CLRF       read_eeprom_dataWrited_L0+1
+;eeprom_manager.c,3 :: 		EEADRH = addrh;
 	MOVF       FARG_read_eeprom_addrh+0, 0
 	MOVWF      EEADRH+0
-;eeprom_manager.c,5 :: 		EEDAT = 0X00; //Limpieza del registro
-	CLRF       EEDAT+0
-;eeprom_manager.c,6 :: 		EEDATH = 0X00; //Limpieza del registro
+;eeprom_manager.c,4 :: 		EEADR = addr;
+	MOVF       FARG_read_eeprom_addr+0, 0
+	MOVWF      EEADR+0
+;eeprom_manager.c,5 :: 		EEDATH = 0X00; //Limpieza del registro
 	CLRF       EEDATH+0
-;eeprom_manager.c,7 :: 		EECON1.EEPGD = 1;
+;eeprom_manager.c,6 :: 		EEDAT = 0X00; //Limpieza del registro
+	CLRF       EEDAT+0
+;eeprom_manager.c,7 :: 		UART1_Write(EEADRH);
+	MOVF       EEADRH+0, 0
+	MOVWF      FARG_UART1_Write_data_+0
+	CALL       _UART1_Write+0
+;eeprom_manager.c,8 :: 		UART1_Write(EEADR);
+	MOVF       EEADR+0, 0
+	MOVWF      FARG_UART1_Write_data_+0
+	CALL       _UART1_Write+0
+;eeprom_manager.c,9 :: 		EECON1.EEPGD = 1;
 	BSF        EECON1+0, 7
-;eeprom_manager.c,8 :: 		EECON1.RD = 1; //Inicio de Lectura
+;eeprom_manager.c,10 :: 		EECON1.RD = 1; //Inicio de Lectura
 	BSF        EECON1+0, 0
-;eeprom_manager.c,10 :: 		nop
+;eeprom_manager.c,12 :: 		nop
 	NOP
-;eeprom_manager.c,11 :: 		nop
+;eeprom_manager.c,13 :: 		nop
 	NOP
-;eeprom_manager.c,13 :: 		while(EECON1.RD);
+;eeprom_manager.c,15 :: 		while(EECON1.RD);
 L_read_eeprom0:
 	BTFSS      EECON1+0, 0
 	GOTO       L_read_eeprom1
 	GOTO       L_read_eeprom0
 L_read_eeprom1:
-;eeprom_manager.c,14 :: 		UART1_Write(addrh);
-	MOVF       FARG_read_eeprom_addrh+0, 0
-	MOVWF      FARG_UART1_Write_data_+0
-	CALL       _UART1_Write+0
-;eeprom_manager.c,15 :: 		UART1_Write(addr);
-	MOVF       FARG_read_eeprom_addr+0, 0
-	MOVWF      FARG_UART1_Write_data_+0
-	CALL       _UART1_Write+0
-;eeprom_manager.c,16 :: 		UART1_Write(EEDATH);
+;eeprom_manager.c,16 :: 		dataWrited[0]=EEDATH;
 	MOVF       EEDATH+0, 0
-	MOVWF      FARG_UART1_Write_data_+0
-	CALL       _UART1_Write+0
-;eeprom_manager.c,17 :: 		UART1_Write(EEDAT);
+	MOVWF      read_eeprom_dataWrited_L0+0
+;eeprom_manager.c,17 :: 		dataWrited[1]=EEDAT;
 	MOVF       EEDAT+0, 0
-	MOVWF      FARG_UART1_Write_data_+0
-	CALL       _UART1_Write+0
-;eeprom_manager.c,18 :: 		}
+	MOVWF      read_eeprom_dataWrited_L0+1
+;eeprom_manager.c,18 :: 		UART1_Write_Text(dataWrited);
+	MOVLW      read_eeprom_dataWrited_L0+0
+	MOVWF      FARG_UART1_Write_Text_uart_text+0
+	CALL       _UART1_Write_Text+0
+;eeprom_manager.c,19 :: 		}
 L_end_read_eeprom:
 	RETURN
 ; end of _read_eeprom
 
 _write_eeprom:
 
-;eeprom_manager.c,20 :: 		void write_eeprom(char addrh,char addr, char datoh ,char dato){
-;eeprom_manager.c,21 :: 		EEADR = addr;
-	MOVF       FARG_write_eeprom_addr+0, 0
-	MOVWF      EEADR+0
+;eeprom_manager.c,21 :: 		void write_eeprom(unsigned char addrh,unsigned char addr, unsigned char datoh ,unsigned char dato){
 ;eeprom_manager.c,22 :: 		EEADRH = addrh;
 	MOVF       FARG_write_eeprom_addrh+0, 0
 	MOVWF      EEADRH+0
-;eeprom_manager.c,23 :: 		EEDATA = dato;
-	MOVF       FARG_write_eeprom_dato+0, 0
-	MOVWF      EEDATA+0
+;eeprom_manager.c,23 :: 		EEADR = addr;
+	MOVF       FARG_write_eeprom_addr+0, 0
+	MOVWF      EEADR+0
 ;eeprom_manager.c,24 :: 		EEDATH = datoh;
 	MOVF       FARG_write_eeprom_datoh+0, 0
 	MOVWF      EEDATH+0
-;eeprom_manager.c,25 :: 		EECON1.EEPGD = 1;
+;eeprom_manager.c,25 :: 		EEDATA = dato;
+	MOVF       FARG_write_eeprom_dato+0, 0
+	MOVWF      EEDATA+0
+;eeprom_manager.c,26 :: 		UART1_Write(EEADRH);
+	MOVF       EEADRH+0, 0
+	MOVWF      FARG_UART1_Write_data_+0
+	CALL       _UART1_Write+0
+;eeprom_manager.c,27 :: 		UART1_Write(EEADR);
+	MOVF       EEADR+0, 0
+	MOVWF      FARG_UART1_Write_data_+0
+	CALL       _UART1_Write+0
+;eeprom_manager.c,28 :: 		UART1_Write(EEDATH);
+	MOVF       EEDATH+0, 0
+	MOVWF      FARG_UART1_Write_data_+0
+	CALL       _UART1_Write+0
+;eeprom_manager.c,29 :: 		UART1_Write(EEDATA);
+	MOVF       EEDATA+0, 0
+	MOVWF      FARG_UART1_Write_data_+0
+	CALL       _UART1_Write+0
+;eeprom_manager.c,30 :: 		EECON1.EEPGD = 1;
 	BSF        EECON1+0, 7
-;eeprom_manager.c,26 :: 		EECON1.WREN = 1;
+;eeprom_manager.c,31 :: 		EECON1.WREN = 1;
 	BSF        EECON1+0, 2
-;eeprom_manager.c,27 :: 		INTCON.GIE = 0;
+;eeprom_manager.c,32 :: 		INTCON.GIE = 0;
 	BCF        INTCON+0, 7
-;eeprom_manager.c,28 :: 		EECON2 = 0x55;
+;eeprom_manager.c,33 :: 		EECON2 = 0x55;
 	MOVLW      85
 	MOVWF      EECON2+0
-;eeprom_manager.c,29 :: 		EECON2 = 0xAA;
+;eeprom_manager.c,34 :: 		EECON2 = 0xAA;
 	MOVLW      170
 	MOVWF      EECON2+0
-;eeprom_manager.c,30 :: 		EECON1.WR = 1;
+;eeprom_manager.c,35 :: 		EECON1.WR = 1;
 	BSF        EECON1+0, 1
-;eeprom_manager.c,32 :: 		nop
+;eeprom_manager.c,37 :: 		nop
 	NOP
-;eeprom_manager.c,33 :: 		nop
+;eeprom_manager.c,38 :: 		nop
 	NOP
-;eeprom_manager.c,35 :: 		while(EECON1.WR);
+;eeprom_manager.c,40 :: 		while(EECON1.WR);
 L_write_eeprom2:
 	BTFSS      EECON1+0, 1
 	GOTO       L_write_eeprom3
 	GOTO       L_write_eeprom2
 L_write_eeprom3:
-;eeprom_manager.c,36 :: 		INTCON.GIE = 1;
+;eeprom_manager.c,41 :: 		INTCON.GIE = 1;
 	BSF        INTCON+0, 7
-;eeprom_manager.c,37 :: 		UART1_Write(addrh);
-	MOVF       FARG_write_eeprom_addrh+0, 0
-	MOVWF      FARG_UART1_Write_data_+0
-	CALL       _UART1_Write+0
-;eeprom_manager.c,38 :: 		UART1_Write(addr);
-	MOVF       FARG_write_eeprom_addr+0, 0
-	MOVWF      FARG_UART1_Write_data_+0
-	CALL       _UART1_Write+0
-;eeprom_manager.c,39 :: 		UART1_Write(datoh);
-	MOVF       FARG_write_eeprom_datoh+0, 0
-	MOVWF      FARG_UART1_Write_data_+0
-	CALL       _UART1_Write+0
-;eeprom_manager.c,40 :: 		UART1_Write(dato);
-	MOVF       FARG_write_eeprom_dato+0, 0
-	MOVWF      FARG_UART1_Write_data_+0
-	CALL       _UART1_Write+0
-;eeprom_manager.c,41 :: 		}
+;eeprom_manager.c,42 :: 		}
 L_end_write_eeprom:
 	RETURN
 ; end of _write_eeprom
@@ -190,21 +195,21 @@ _ascii2hex:
 	ADDWF      R0+0, 1
 	MOVF       R0+0, 0
 	MOVWF      ascii2hex_dato_L0+0
-;uart_manager.c,25 :: 		PORTB = 0xFF;
+;uart_manager.c,24 :: 		PORTB = 0xFF;
 	MOVLW      255
 	MOVWF      PORTB+0
-;uart_manager.c,26 :: 		return dato;
-;uart_manager.c,27 :: 		}
+;uart_manager.c,25 :: 		return dato;
+;uart_manager.c,26 :: 		}
 L_end_ascii2hex:
 	RETURN
 ; end of _ascii2hex
 
 _check_sum:
 
-;uart_manager.c,28 :: 		unsigned char check_sum(unsigned char * trama) {
-;uart_manager.c,29 :: 		unsigned char checksum, j = 0x00;
+;uart_manager.c,27 :: 		unsigned char check_sum(unsigned char * trama) {
+;uart_manager.c,28 :: 		unsigned char checksum, j = 0x00;
 	CLRF       check_sum_j_L0+0
-;uart_manager.c,30 :: 		unsigned char size = trama[0]+0x04;
+;uart_manager.c,29 :: 		unsigned char size = trama[0]+0x04;
 	MOVF       FARG_check_sum_trama+0, 0
 	MOVWF      FSR
 	MOVLW      4
@@ -215,32 +220,32 @@ _check_sum:
 	INCF       R0+1, 1
 	MOVF       R0+0, 0
 	MOVWF      R3+0
-;uart_manager.c,31 :: 		for(j = 0; j<size; j++)
+;uart_manager.c,30 :: 		for(j = 0; j<size; j++){
 	CLRF       check_sum_j_L0+0
 L_check_sum9:
 	MOVF       R3+0, 0
 	SUBWF      check_sum_j_L0+0, 0
 	BTFSC      STATUS+0, 0
 	GOTO       L_check_sum10
-;uart_manager.c,33 :: 		checksum += trama[j];
+;uart_manager.c,31 :: 		checksum += trama[j];
 	MOVF       check_sum_j_L0+0, 0
 	ADDWF      FARG_check_sum_trama+0, 0
 	MOVWF      FSR
 	MOVF       INDF+0, 0
 	ADDWF      R2+0, 1
-;uart_manager.c,31 :: 		for(j = 0; j<size; j++)
+;uart_manager.c,30 :: 		for(j = 0; j<size; j++){
 	INCF       check_sum_j_L0+0, 1
-;uart_manager.c,35 :: 		}
+;uart_manager.c,32 :: 		}
 	GOTO       L_check_sum9
 L_check_sum10:
-;uart_manager.c,36 :: 		checksum = ~checksum + 1;
+;uart_manager.c,33 :: 		checksum = ~checksum + 1;
 	COMF       R2+0, 0
 	MOVWF      R0+0
 	INCF       R0+0, 0
 	MOVWF      R1+0
 	MOVF       R1+0, 0
 	MOVWF      R2+0
-;uart_manager.c,40 :: 		j = (checksum == trama[size]);
+;uart_manager.c,34 :: 		j = (checksum == trama[size]);
 	MOVF       R3+0, 0
 	ADDWF      FARG_check_sum_trama+0, 0
 	MOVWF      FSR
@@ -252,10 +257,10 @@ L_check_sum10:
 	MOVWF      R0+0
 	MOVF       R0+0, 0
 	MOVWF      check_sum_j_L0+0
-;uart_manager.c,41 :: 		checksum = 0;
+;uart_manager.c,35 :: 		checksum = 0;
 	CLRF       R2+0
-;uart_manager.c,42 :: 		return j;
-;uart_manager.c,43 :: 		}
+;uart_manager.c,36 :: 		return j;
+;uart_manager.c,37 :: 		}
 L_end_check_sum:
 	RETURN
 ; end of _check_sum
@@ -334,11 +339,11 @@ L_main16:
 ;Escritor.c,24 :: 		}
 	GOTO       L_main16
 L_main17:
-;Escritor.c,25 :: 		check = check_sum(trama);
+;Escritor.c,25 :: 		check = check_sum(trama); //Comprobador de checksum
 	MOVLW      main_trama_L0+0
 	MOVWF      FARG_check_sum_trama+0
 	CALL       _check_sum+0
-;Escritor.c,26 :: 		check ? write_intel(trama) : UART1_Write_Text("BAD\n");
+;Escritor.c,26 :: 		check ? write_intel(trama) : UART1_Write_Text("BAD\n"); //Escritura
 	MOVF       R0+0, 0
 	BTFSC      STATUS+0, 2
 	GOTO       L_main19
@@ -353,51 +358,51 @@ L_main19:
 L_main20:
 ;Escritor.c,27 :: 		j = 0;
 	CLRF       main_j_L0+0
-;Escritor.c,28 :: 		for(j = 0; j<size; j++){
+;Escritor.c,28 :: 		for(j = 0; j<21; j++){
 	CLRF       main_j_L0+0
 L_main21:
-	MOVF       main_size_L0+0, 0
+	MOVLW      21
 	SUBWF      main_j_L0+0, 0
 	BTFSC      STATUS+0, 0
 	GOTO       L_main22
-;Escritor.c,30 :: 		trama[j] = 0x00;
+;Escritor.c,29 :: 		trama[j] = 0x00;
 	MOVF       main_j_L0+0, 0
 	ADDLW      main_trama_L0+0
 	MOVWF      FSR
 	CLRF       INDF+0
-;Escritor.c,28 :: 		for(j = 0; j<size; j++){
+;Escritor.c,28 :: 		for(j = 0; j<21; j++){
 	INCF       main_j_L0+0, 1
-;Escritor.c,31 :: 		}
+;Escritor.c,30 :: 		}
 	GOTO       L_main21
 L_main22:
-;Escritor.c,32 :: 		j = 0;
+;Escritor.c,31 :: 		j = 0;
 	CLRF       main_j_L0+0
-;Escritor.c,33 :: 		PORTB = 0x00;
+;Escritor.c,32 :: 		PORTB = 0x00;
 	CLRF       PORTB+0
-;Escritor.c,34 :: 		}
+;Escritor.c,33 :: 		}
 L_main15:
-;Escritor.c,35 :: 		}
+;Escritor.c,34 :: 		}
 L_main14:
-;Escritor.c,36 :: 		}
+;Escritor.c,35 :: 		}
 	GOTO       L_main12
-;Escritor.c,37 :: 		}
+;Escritor.c,36 :: 		}
 L_end_main:
 	GOTO       $+0
 ; end of _main
 
 _write_intel:
 
-;Escritor.c,38 :: 		void write_intel(unsigned char * trama){
-;Escritor.c,39 :: 		unsigned char i = 0x00;
+;Escritor.c,37 :: 		void write_intel(unsigned char * trama){
+;Escritor.c,38 :: 		unsigned char i = 0x00;
 	CLRF       write_intel_i_L0+0
-;Escritor.c,40 :: 		PORTB = 0xFF;
+;Escritor.c,39 :: 		PORTB = 0xFF;
 	MOVLW      255
 	MOVWF      PORTB+0
-;Escritor.c,41 :: 		UART1_Write_Text("OK\n");
+;Escritor.c,40 :: 		UART1_Write_Text("OK\n");
 	MOVLW      ?lstr2_Escritor+0
 	MOVWF      FARG_UART1_Write_Text_uart_text+0
 	CALL       _UART1_Write_Text+0
-;Escritor.c,42 :: 		for(i = 0; i<trama[0]; i+=2){
+;Escritor.c,41 :: 		for(i = 0; i<trama[0]; i+=2){
 	CLRF       write_intel_i_L0+0
 L_write_intel24:
 	MOVF       FARG_write_intel_trama+0, 0
@@ -406,17 +411,13 @@ L_write_intel24:
 	SUBWF      write_intel_i_L0+0, 0
 	BTFSC      STATUS+0, 0
 	GOTO       L_write_intel25
-;Escritor.c,43 :: 		delay_ms(1);
-	MOVLW      2
-	MOVWF      R12+0
-	MOVLW      75
+;Escritor.c,42 :: 		delay_us(10);
+	MOVLW      3
 	MOVWF      R13+0
 L_write_intel27:
 	DECFSZ     R13+0, 1
 	GOTO       L_write_intel27
-	DECFSZ     R12+0, 1
-	GOTO       L_write_intel27
-;Escritor.c,44 :: 		write_eeprom(trama[1], trama[2], trama[i+0x05], trama[i+0x04]);
+;Escritor.c,43 :: 		write_eeprom(trama[1], trama[2], trama[i+0x05], trama[i+0x04]);
 	INCF       FARG_write_intel_trama+0, 0
 	MOVWF      FSR
 	MOVF       INDF+0, 0
@@ -449,6 +450,12 @@ L_write_intel27:
 	MOVF       INDF+0, 0
 	MOVWF      FARG_write_eeprom_dato+0
 	CALL       _write_eeprom+0
+;Escritor.c,44 :: 		delay_us(10);
+	MOVLW      3
+	MOVWF      R13+0
+L_write_intel28:
+	DECFSZ     R13+0, 1
+	GOTO       L_write_intel28
 ;Escritor.c,45 :: 		read_eeprom(trama[1], trama[2]);
 	INCF       FARG_write_intel_trama+0, 0
 	MOVWF      FSR
@@ -460,14 +467,20 @@ L_write_intel27:
 	MOVF       INDF+0, 0
 	MOVWF      FARG_read_eeprom_addr+0
 	CALL       _read_eeprom+0
-;Escritor.c,46 :: 		if(trama[2] == 0xFF) trama[1]+=0x01;
+;Escritor.c,46 :: 		delay_us(10);
+	MOVLW      3
+	MOVWF      R13+0
+L_write_intel29:
+	DECFSZ     R13+0, 1
+	GOTO       L_write_intel29
+;Escritor.c,47 :: 		if(trama[2] == 0xFF) trama[1]+=0x01;
 	MOVLW      2
 	ADDWF      FARG_write_intel_trama+0, 0
 	MOVWF      FSR
 	MOVF       INDF+0, 0
 	XORLW      255
 	BTFSS      STATUS+0, 2
-	GOTO       L_write_intel28
+	GOTO       L_write_intel30
 	INCF       FARG_write_intel_trama+0, 0
 	MOVWF      R1+0
 	MOVF       R1+0, 0
@@ -478,8 +491,8 @@ L_write_intel27:
 	MOVWF      FSR
 	MOVF       R0+0, 0
 	MOVWF      INDF+0
-L_write_intel28:
-;Escritor.c,47 :: 		trama[2]+=0x01;
+L_write_intel30:
+;Escritor.c,48 :: 		trama[2]+=0x01;
 	MOVLW      2
 	ADDWF      FARG_write_intel_trama+0, 0
 	MOVWF      R1+0
@@ -491,17 +504,7 @@ L_write_intel28:
 	MOVWF      FSR
 	MOVF       R0+0, 0
 	MOVWF      INDF+0
-;Escritor.c,48 :: 		delay_ms(1);
-	MOVLW      2
-	MOVWF      R12+0
-	MOVLW      75
-	MOVWF      R13+0
-L_write_intel29:
-	DECFSZ     R13+0, 1
-	GOTO       L_write_intel29
-	DECFSZ     R12+0, 1
-	GOTO       L_write_intel29
-;Escritor.c,42 :: 		for(i = 0; i<trama[0]; i+=2){
+;Escritor.c,41 :: 		for(i = 0; i<trama[0]; i+=2){
 	MOVLW      2
 	ADDWF      write_intel_i_L0+0, 1
 ;Escritor.c,49 :: 		}
@@ -536,13 +539,13 @@ _start:
 	MOVWF      R12+0
 	MOVLW      173
 	MOVWF      R13+0
-L_start30:
+L_start31:
 	DECFSZ     R13+0, 1
-	GOTO       L_start30
+	GOTO       L_start31
 	DECFSZ     R12+0, 1
-	GOTO       L_start30
+	GOTO       L_start31
 	DECFSZ     R11+0, 1
-	GOTO       L_start30
+	GOTO       L_start31
 	NOP
 	NOP
 ;Escritor.c,59 :: 		PORTB=0X00;

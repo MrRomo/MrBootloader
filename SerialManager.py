@@ -54,7 +54,7 @@ class SerialManager:
             self.disconnect()
         else:
             baudios = int(self.ui.baudSelector.currentText())
-            self.connection = self.serial_connect(self.current_port, baudios, rtscts=True, timeout = 0.1)
+            self.connection = self.serial_connect(self.current_port, baudios, rtscts=True, timeout = .5)
             self.connected = True
             self.consoleManager.pub('Connection successfully to {}\n'.format(self.current_port))
             self.connectButton.setText(self.ui.translate("MainWindow", 'Disconnect'))

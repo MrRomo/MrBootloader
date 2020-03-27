@@ -22,11 +22,10 @@ void main() {
       for(j = 1; j<size; j++){
         trama[j] = ascii2hex();
       }
-      check = check_sum(trama);
+      check = check_sum(trama); //comprobar checksum
       check ? write_intel(trama) : UART1_Write_Text("BAD\n");
       j = 0;
       for(j = 0; j<size; j++){
-      //  UART1_Write(trama[j]);
        trama[j] = 0x00;
       }
       j = 0;
@@ -40,10 +39,11 @@ void write_intel(unsigned char * trama){
   PORTB = 0xFF;
   UART1_Write_Text("OK\n");
   for(i = 0; i<trama[0]; i+=2){
-    delay_ms(1);
+    delay_us(10);
     write_eeprom(trama[1], trama[2], trama[i+0x05], trama[i+0x04]);
+    delay_us(10);
     read_eeprom(trama[1], trama[2]);
-    delay_ms(1);
+    delay_us(10);
     if(trama[2] == 0xFF) trama[1]+=0x01;
     trama[2]+=0x01;
   }

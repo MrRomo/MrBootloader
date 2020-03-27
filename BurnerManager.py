@@ -27,6 +27,7 @@ class BurnerManager:
         res = 'BAD'
         for i, line in enumerate(code):
             self.serialManager.connection.flushInput()
+            delay(1)
             self.serialManager.write_port_byte(line)
             while True:
                 res = self.serialManager.connection.readline().decode().split('\n')[0]
@@ -47,13 +48,12 @@ class BurnerManager:
                                 code += temp.hex()
                                 if(z==1): code += '->'    
                             code += ' '    
-                        code += ' '
-                        self.console.pub('{} - Line write on: {} \n'.format(i, code.upper()))
+                        code += 'OK'  if (code.split(' ')[0] == code.split(' ')[1]) else 'BAD'
+                        self.console.pub('{} - Data write on: {} \n'.format(i, code.upper()))
                         code = res = ''
+                    self.console.pub('Write completed\n')
+                else:
                     break
-                    # code = ' '.join([code[g:g+4] for g in range(0, len(code), 4)])
-                print('-{}-'.format(res))
-                delay(1)
 
 
                 

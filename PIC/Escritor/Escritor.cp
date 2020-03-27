@@ -1,11 +1,21 @@
 #line 1 "C:/Users/wwrik/Documents/Code/Micros/MrBootloader/PIC/Escritor/Escritor.c"
 #line 1 "c:/users/wwrik/documents/code/micros/mrbootloader/pic/escritor/eeprom_manager.c"
+<<<<<<< HEAD
 void read_eeprom( char addrh, char addr) {
  unsigned int response;
+=======
+void read_eeprom( unsigned char addrh, unsigned char addr) {
+ unsigned char dataWrited[2] = {0};
+>>>>>>> c6ed5fcff137cb0ab78f1c9d74ad5436459b2e4e
  EEADRH = addrh;
  EEADR = addr;
  EEDATH = 0X00;
  EEDAT = 0X00;
+<<<<<<< HEAD
+=======
+ UART1_Write(EEADRH);
+ UART1_Write(EEADR);
+>>>>>>> c6ed5fcff137cb0ab78f1c9d74ad5436459b2e4e
  EECON1.EEPGD = 1;
  EECON1.RD = 1;
  asm{
@@ -13,6 +23,7 @@ void read_eeprom( char addrh, char addr) {
  nop
  }
  while(EECON1.RD);
+<<<<<<< HEAD
  UART1_Write(EEADRH);
  UART1_Write(EEADR);
  UART1_Write(EEDATH);
@@ -20,6 +31,14 @@ void read_eeprom( char addrh, char addr) {
 }
 
 void write_eeprom(char addrh,char addr, char datoh ,char dato){
+=======
+ dataWrited[0]=EEDATH;
+ dataWrited[1]=EEDAT;
+ UART1_Write_Text(dataWrited);
+}
+
+void write_eeprom(unsigned char addrh,unsigned char addr, unsigned char datoh ,unsigned char dato){
+>>>>>>> c6ed5fcff137cb0ab78f1c9d74ad5436459b2e4e
  EEADRH = addrh;
  EEADR = addr;
  EEDATH = datoh;
@@ -71,8 +90,7 @@ unsigned char ascii2hex(){
 unsigned char check_sum(unsigned char * trama) {
  unsigned char checksum, j = 0x00;
  unsigned char size = trama[0]+0x04;
- for(j = 0; j<size; j++)
- {
+ for(j = 0; j<size; j++){
  checksum += trama[j];
  }
  checksum = ~checksum + 1;
@@ -106,7 +124,11 @@ void main() {
  check = check_sum(trama);
  check ? write_intel(trama) : UART1_Write_Text("BAD\n");
  j = 0;
+<<<<<<< HEAD
  for(j = 0; j<size; j++){
+=======
+ for(j = 0; j<21; j++){
+>>>>>>> c6ed5fcff137cb0ab78f1c9d74ad5436459b2e4e
  trama[j] = 0x00;
  }
  j = 0;

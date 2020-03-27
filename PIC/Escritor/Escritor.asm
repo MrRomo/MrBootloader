@@ -14,13 +14,13 @@ _read_eeprom:
 	CLRF       EEDAT+0
 ;eeprom_manager.c,7 :: 		EECON1.EEPGD = 1;
 	BSF        EECON1+0, 7
-;eeprom_manager.c,8 :: 		EECON1.RD = 1; //Inicio de Lectura
+;eeprom_manager.c,10 :: 		EECON1.RD = 1; //Inicio de Lectura
 	BSF        EECON1+0, 0
-;eeprom_manager.c,10 :: 		nop
+;eeprom_manager.c,12 :: 		nop
 	NOP
-;eeprom_manager.c,11 :: 		nop
+;eeprom_manager.c,13 :: 		nop
 	NOP
-;eeprom_manager.c,13 :: 		while(EECON1.RD);
+;eeprom_manager.c,15 :: 		while(EECON1.RD);
 L_read_eeprom0:
 	BTFSS      EECON1+0, 0
 	GOTO       L_read_eeprom1
@@ -36,13 +36,15 @@ L_read_eeprom1:
 	CALL       _UART1_Write+0
 ;eeprom_manager.c,16 :: 		UART1_Write(EEDATH);
 	MOVF       EEDATH+0, 0
-	MOVWF      FARG_UART1_Write_data_+0
-	CALL       _UART1_Write+0
-;eeprom_manager.c,17 :: 		UART1_Write(EEDAT);
+	MOVWF      read_eeprom_dataWrited_L0+0
+;eeprom_manager.c,17 :: 		dataWrited[1]=EEDAT;
 	MOVF       EEDAT+0, 0
-	MOVWF      FARG_UART1_Write_data_+0
-	CALL       _UART1_Write+0
-;eeprom_manager.c,18 :: 		}
+	MOVWF      read_eeprom_dataWrited_L0+1
+;eeprom_manager.c,18 :: 		UART1_Write_Text(dataWrited);
+	MOVLW      read_eeprom_dataWrited_L0+0
+	MOVWF      FARG_UART1_Write_Text_uart_text+0
+	CALL       _UART1_Write_Text+0
+;eeprom_manager.c,19 :: 		}
 L_end_read_eeprom:
 	RETURN
 ; end of _read_eeprom
@@ -338,7 +340,7 @@ L_main17:
 	MOVLW      main_trama_L0+0
 	MOVWF      FARG_check_sum_trama+0
 	CALL       _check_sum+0
-;Escritor.c,26 :: 		check ? write_intel(trama) : UART1_Write_Text("BAD\n");
+;Escritor.c,26 :: 		check ? write_intel(trama) : UART1_Write_Text("BAD\n"); //Escritura
 	MOVF       R0+0, 0
 	BTFSC      STATUS+0, 2
 	GOTO       L_main19
@@ -353,10 +355,10 @@ L_main19:
 L_main20:
 ;Escritor.c,27 :: 		j = 0;
 	CLRF       main_j_L0+0
-;Escritor.c,28 :: 		for(j = 0; j<size; j++){
+;Escritor.c,28 :: 		for(j = 0; j<21; j++){
 	CLRF       main_j_L0+0
 L_main21:
-	MOVF       main_size_L0+0, 0
+	MOVLW      21
 	SUBWF      main_j_L0+0, 0
 	BTFSC      STATUS+0, 0
 	GOTO       L_main22
@@ -365,7 +367,7 @@ L_main21:
 	ADDLW      main_trama_L0+0
 	MOVWF      FSR
 	CLRF       INDF+0
-;Escritor.c,28 :: 		for(j = 0; j<size; j++){
+;Escritor.c,28 :: 		for(j = 0; j<21; j++){
 	INCF       main_j_L0+0, 1
 ;Escritor.c,30 :: 		}
 	GOTO       L_main21

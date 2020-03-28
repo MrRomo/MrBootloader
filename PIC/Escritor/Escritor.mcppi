@@ -35,9 +35,12 @@ Count=0
 [OTHER_FILES]
 Count=0
 [SEARCH_PATH]
-Count=0
+Path0=C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\Defs\
+Path1=C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\Uses\P16\
+Count=2
 [HEADER_PATH]
-Count=0
+Path0=C:\Users\Public\Documents\Mikroelektronika\mikroC PRO for PIC\Uses\P16\
+Count=1
 [HEADERS]
 File0=uart_manager.h
 File1=eeprom_manager.h
@@ -51,8 +54,9 @@ File2=UART
 File3=Software_UART
 Count=4
 [EXPANDED_NODES]
+0=Escritor.mcppi
 1=Sources
-Count=1
+Count=2
 [LIB_EXPANDED_NODES]
 0=mikroE Libraries
 1=System Libraries

@@ -24,9 +24,6 @@ void main() {
         trama[j] = ascii2hex();
       }
       check = check_sum(trama);
-      dir = (trama[1] << 8)|trama[2]/2;
-      trama[1]= dir>>8;
-      trama[2]= dir;
       check ? write_intel(trama) : UART1_Write_Text("BAD\n");
       j = 0;
       for(j = 0; j<size; j++){
@@ -40,7 +37,10 @@ void main() {
    }
 }
 void write_intel(unsigned char * trama){
-  unsigned char i = 0x00;
+  unsigned char i = 0, addrh = trama[1], addr = trama[2], size = trama[0]+5;
+  unsigned int dir = (addrh << 8 | addr)/2;
+  trama[2] = dir;
+  trama[1] = dir>>8;
   PORTB = 0xFF;
   for(i = 0; i<trama[0]; i+=2){
     delay_ms(1);

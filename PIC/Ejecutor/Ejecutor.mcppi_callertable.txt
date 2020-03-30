@@ -10,7 +10,6 @@ main
 		readData
 			UART1_Data_Ready
 			UART1_Read
-		mult
 	write_eeprom
 		UART1_Write_Text
 			UART1_Write

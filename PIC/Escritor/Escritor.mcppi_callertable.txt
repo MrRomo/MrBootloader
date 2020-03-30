@@ -21,4 +21,3 @@ main
 			UART1_Write
 	UART1_Write_Text
 		UART1_Write
-	UART1_Write

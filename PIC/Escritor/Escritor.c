@@ -25,12 +25,6 @@ void main() {
       }
       check = check_sum(trama);
       check ? write_intel(trama) : UART1_Write_Text("BAD\n");
-      j = 0;
-      for(j = 0; j<size; j++){
-       UART1_Write(trama[j]);
-       trama[j] = 0x00;
-      }
-      j = 0;
       PORTB = 0x00;
      }
     }
@@ -49,7 +43,6 @@ void write_intel(unsigned char * trama){
     trama[2]+=0x01;
     delay_ms(1);
   }
-  i = 0;
   UART1_Write_Text("OK\n");
 }
 

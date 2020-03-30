@@ -37,18 +37,17 @@ class BurnerManager:
                     self.serialManager.connection.flushInput()
                     self.serialManager.write_port_byte(line)
                 elif (res == 'OK'):
+                    self.serialManager.connection.flushInput()
                     self.console.pub('{} - {} - Linea enviada correctamente. \n'.format(i,line))
                     print('{} - {} - Linea enviada correctamente.'.format(i,res))
-                    size = int(line[1:3],16)+5
-                    print('Size of trama:',size)
-                    for l in range(size):
-                        temp = self.serialManager.connection.read()
-                        code += temp.hex()
-                    self.console.pub('{} - :{} - Linea enviada correctamente. \n'.format(i,code.upper()))
-                    code = res = ''
                     break
-                print('-{}-'.format(res))
-                delay(1)
+                    # print('Size of trama:',size)
+                    # size = int(line[1:3],16)+5
+                    # for l in range(size):
+                    #     temp = self.serialManager.connection.read()
+                    #     code += temp.hex()
+                    # self.console.pub('{} - :{} - Linea enviada correctamente. \n'.format(i,code.upper()))
+                    # code = res = ''
 
 
                 

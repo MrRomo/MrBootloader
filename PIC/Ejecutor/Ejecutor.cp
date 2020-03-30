@@ -113,6 +113,11 @@ void main() {
  check = check_sum(trama);
  check ? write_eeprom(trama) : UART1_Write_Text("BAD\n");
  PORTB = 0x00;
+ if(!size) {
+ asm {
+ goto 0x500;
+ }
+ }
  }
  }
  }

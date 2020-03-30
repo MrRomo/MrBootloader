@@ -455,55 +455,63 @@ L_main23:
 L_main24:
 ;Ejecutor.c,23 :: 		PORTB = 0x00;
 	CLRF       PORTB+0
-;Ejecutor.c,24 :: 		}
+;Ejecutor.c,24 :: 		if(!size) {
+	MOVF       main_size_L0+0, 0
+	BTFSS      STATUS+0, 2
+	GOTO       L_main25
+;Ejecutor.c,26 :: 		goto 0x500;
+	GOTO       1280
+;Ejecutor.c,28 :: 		}
+L_main25:
+;Ejecutor.c,29 :: 		}
 L_main19:
-;Ejecutor.c,25 :: 		}
+;Ejecutor.c,30 :: 		}
 L_main18:
-;Ejecutor.c,26 :: 		}
+;Ejecutor.c,31 :: 		}
 	GOTO       L_main16
-;Ejecutor.c,27 :: 		}
+;Ejecutor.c,32 :: 		}
 L_end_main:
 	GOTO       $+0
 ; end of _main
 
 _start:
 
-;Ejecutor.c,28 :: 		void start() {
-;Ejecutor.c,29 :: 		ANSELH=0X00;
+;Ejecutor.c,33 :: 		void start() {
+;Ejecutor.c,34 :: 		ANSELH=0X00;
 	CLRF       ANSELH+0
-;Ejecutor.c,30 :: 		TRISB=0X00;
+;Ejecutor.c,35 :: 		TRISB=0X00;
 	CLRF       TRISB+0
-;Ejecutor.c,31 :: 		PORTB=0XFF;
+;Ejecutor.c,36 :: 		PORTB=0XFF;
 	MOVLW      255
 	MOVWF      PORTB+0
-;Ejecutor.c,32 :: 		UART1_Init(9600);
+;Ejecutor.c,37 :: 		UART1_Init(9600);
 	MOVLW      25
 	MOVWF      SPBRG+0
 	BSF        TXSTA+0, 2
 	CALL       _UART1_Init+0
-;Ejecutor.c,33 :: 		Delay_ms(1000);
+;Ejecutor.c,38 :: 		Delay_ms(1000);
 	MOVLW      6
 	MOVWF      R11+0
 	MOVLW      19
 	MOVWF      R12+0
 	MOVLW      173
 	MOVWF      R13+0
-L_start25:
+L_start26:
 	DECFSZ     R13+0, 1
-	GOTO       L_start25
+	GOTO       L_start26
 	DECFSZ     R12+0, 1
-	GOTO       L_start25
+	GOTO       L_start26
 	DECFSZ     R11+0, 1
-	GOTO       L_start25
+	GOTO       L_start26
 	NOP
 	NOP
-;Ejecutor.c,34 :: 		PORTB=0X00;
+;Ejecutor.c,39 :: 		PORTB=0X00;
 	CLRF       PORTB+0
-;Ejecutor.c,35 :: 		UART1_Write_Text("MrBurner Ready");
+;Ejecutor.c,40 :: 		UART1_Write_Text("MrBurner Ready");
 	MOVLW      ?lstr3_Ejecutor+0
 	MOVWF      FARG_UART1_Write_Text_uart_text+0
 	CALL       _UART1_Write_Text+0
-;Ejecutor.c,36 :: 		}
+;Ejecutor.c,41 :: 		}
 L_end_start:
 	RETURN
 ; end of _start

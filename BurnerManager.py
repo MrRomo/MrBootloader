@@ -40,6 +40,9 @@ class BurnerManager:
                     self.console.pub('{} - {} - Linea enviada correctamente. \n'.format(i,line))
                     print('{} - {} - Linea enviada correctamente.'.format(i,res))
                     break
+        self.console.pub('Grabacion finalizada')
+        print('Grabacion finalizada')
+                    
                     # print('Size of trama:',size)
                     # size = int(line[1:3],16)+5
                     # for l in range(size):

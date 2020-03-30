@@ -6,7 +6,7 @@ Value=0
 [BUILD_TYPE]
 Value=0
 [ACTIVE_TAB]
-Value=eeprom_manager.c
+Value=Ejecutor.c
 [USE_EEPROM]
 Value=0
 [USE_HEAP]
@@ -55,4 +55,6 @@ Count=4
 1=Sources
 Count=2
 [LIB_EXPANDED_NODES]
-Count=1
+0=mikroE Libraries
+1=System Libraries
+Count=2

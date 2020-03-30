@@ -47,6 +47,6 @@ void write_eeprom(char * trama){
       if(addr == 0xFF) addrh+=0x01;
       addr+=0x01;
     }
-    UART1_Write_Text("OK\n");
   }
+  UART1_Write_Text("OK\n");
 }

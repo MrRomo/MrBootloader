@@ -28,7 +28,7 @@ void write_eeprom(char * trama){
  addrh = dir>>8;
  addr = dir;
  PORTB = 0xFF;
-
+ if(!((dir==0x0000)||(dir>0x1FFF))){
  for(i = 0; i<trama[0]/2; i++){
  EEADR = addr;
  EEADRH = addrh;
@@ -48,6 +48,7 @@ void write_eeprom(char * trama){
  INTCON.GIE = 1;
  if(addr == 0xFF) addrh+=0x01;
  addr+=0x01;
+ }
  }
  UART1_Write_Text("OK\n");
 }
@@ -113,7 +114,9 @@ void main() {
  check = check_sum(trama);
  check ? write_eeprom(trama) : UART1_Write_Text("BAD\n");
  PORTB = 0x00;
- if(!size) {
+ if(!trama[0] && check) {
+ PORTB = 0xFF;
+ UART1_Write_Text("STR\n");
  asm {
  goto 0x500;
  }

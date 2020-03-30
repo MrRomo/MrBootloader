@@ -117,19 +117,19 @@ _write_eeprom:
 	MOVLW      0
 	XORWF      R4+1, 0
 	BTFSS      STATUS+0, 2
-	GOTO       L__write_eeprom34
+	GOTO       L__write_eeprom31
 	MOVLW      0
 	XORWF      R4+0, 0
-L__write_eeprom34:
+L__write_eeprom31:
 	BTFSC      STATUS+0, 2
 	GOTO       L_write_eeprom3
 	MOVF       write_eeprom_dir_L0+1, 0
 	SUBLW      31
 	BTFSS      STATUS+0, 2
-	GOTO       L__write_eeprom35
+	GOTO       L__write_eeprom32
 	MOVF       write_eeprom_dir_L0+0, 0
 	SUBLW      255
-L__write_eeprom35:
+L__write_eeprom32:
 	BTFSS      STATUS+0, 0
 	GOTO       L_write_eeprom3
 	CLRF       R0+0
@@ -370,37 +370,43 @@ _main:
 	CLRF       main_check_L0+0
 ;Ejecutor.c,6 :: 		TRISB=0X00;
 	CLRF       TRISB+0
-;Ejecutor.c,7 :: 		PORTB=0X00;
+;Ejecutor.c,7 :: 		UART1_Init(9600);
+	MOVLW      25
+	MOVWF      SPBRG+0
+	BSF        TXSTA+0, 2
+	CALL       _UART1_Init+0
+;Ejecutor.c,8 :: 		PORTB=0X00;
 	CLRF       PORTB+0
-;Ejecutor.c,8 :: 		while (1) {
+;Ejecutor.c,9 :: 		while (1) {
 L_main16:
-;Ejecutor.c,9 :: 		check = 0;
+;Ejecutor.c,10 :: 		check = 0;
 	CLRF       main_check_L0+0
-;Ejecutor.c,10 :: 		if(UART1_Data_Ready()){
+;Ejecutor.c,11 :: 		if(UART1_Data_Ready()){
 	CALL       _UART1_Data_Ready+0
 	MOVF       R0+0, 0
 	BTFSC      STATUS+0, 2
 	GOTO       L_main18
-;Ejecutor.c,11 :: 		check = readData();
+;Ejecutor.c,12 :: 		check = readData();
 	CALL       _readData+0
 	MOVF       R0+0, 0
 	MOVWF      main_check_L0+0
-;Ejecutor.c,12 :: 		if(check == ':'){
+;Ejecutor.c,13 :: 		if(check == ':'){
 	MOVF       R0+0, 0
 	XORLW      58
 	BTFSS      STATUS+0, 2
 	GOTO       L_main19
-;Ejecutor.c,13 :: 		check = 0;
-	CLRF       main_check_L0+0
 ;Ejecutor.c,14 :: 		trama[0] = ascii2hex();
 	CALL       _ascii2hex+0
 	MOVF       R0+0, 0
 	MOVWF      main_trama_L0+0
-;Ejecutor.c,15 :: 		size = trama[0] + 0x05;
+;Ejecutor.c,15 :: 		check = trama[0];
+	MOVF       R0+0, 0
+	MOVWF      main_check_L0+0
+;Ejecutor.c,16 :: 		size = trama[0] + 0x05;
 	MOVLW      5
 	ADDWF      R0+0, 0
 	MOVWF      main_size_L0+0
-;Ejecutor.c,16 :: 		for(j = 1; j<size; j++){
+;Ejecutor.c,17 :: 		for(j = 1; j<size; j++){
 	MOVLW      1
 	MOVWF      main_j_L0+0
 L_main20:
@@ -408,7 +414,7 @@ L_main20:
 	SUBWF      main_j_L0+0, 0
 	BTFSC      STATUS+0, 0
 	GOTO       L_main21
-;Ejecutor.c,17 :: 		trama[j] = ascii2hex();
+;Ejecutor.c,18 :: 		trama[j] = ascii2hex();
 	MOVF       main_j_L0+0, 0
 	ADDLW      main_trama_L0+0
 	MOVWF      FLOC__main+0
@@ -417,51 +423,18 @@ L_main20:
 	MOVWF      FSR
 	MOVF       R0+0, 0
 	MOVWF      INDF+0
-;Ejecutor.c,16 :: 		for(j = 1; j<size; j++){
-	INCF       main_j_L0+0, 1
-;Ejecutor.c,18 :: 		}
-	GOTO       L_main20
-L_main21:
-;Ejecutor.c,19 :: 		for(j = 0; j<size-1; j++)
-	CLRF       main_j_L0+0
-L_main23:
-	MOVLW      1
-	SUBWF      main_size_L0+0, 0
-	MOVWF      R1+0
-	CLRF       R1+1
-	BTFSS      STATUS+0, 0
-	DECF       R1+1, 1
-	MOVLW      128
-	MOVWF      R0+0
-	MOVLW      128
-	XORWF      R1+1, 0
-	SUBWF      R0+0, 0
-	BTFSS      STATUS+0, 2
-	GOTO       L__main40
-	MOVF       R1+0, 0
-	SUBWF      main_j_L0+0, 0
-L__main40:
-	BTFSC      STATUS+0, 0
-	GOTO       L_main24
-;Ejecutor.c,21 :: 		check += trama[j];
+;Ejecutor.c,19 :: 		check += trama[j];
 	MOVF       main_j_L0+0, 0
 	ADDLW      main_trama_L0+0
 	MOVWF      FSR
 	MOVF       INDF+0, 0
 	ADDWF      main_check_L0+0, 1
-;Ejecutor.c,19 :: 		for(j = 0; j<size-1; j++)
+;Ejecutor.c,17 :: 		for(j = 1; j<size; j++){
 	INCF       main_j_L0+0, 1
-;Ejecutor.c,22 :: 		}
-	GOTO       L_main23
-L_main24:
-;Ejecutor.c,23 :: 		check = ~check + 1;
-	COMF       main_check_L0+0, 0
-	MOVWF      R0+0
-	INCF       R0+0, 0
-	MOVWF      R2+0
-	MOVF       R2+0, 0
-	MOVWF      main_check_L0+0
-;Ejecutor.c,24 :: 		check = (check == (unsigned char)trama[size-1]);
+;Ejecutor.c,20 :: 		}
+	GOTO       L_main20
+L_main21:
+;Ejecutor.c,21 :: 		check -= trama[size-1];
 	MOVLW      1
 	SUBWF      main_size_L0+0, 0
 	MOVWF      R0+0
@@ -470,8 +443,24 @@ L_main24:
 	DECF       R0+1, 1
 	MOVF       R0+0, 0
 	ADDLW      main_trama_L0+0
-	MOVWF      FSR
+	MOVWF      R2+0
 	MOVF       R2+0, 0
+	MOVWF      FSR
+	MOVF       INDF+0, 0
+	SUBWF      main_check_L0+0, 0
+	MOVWF      R0+0
+	MOVF       R0+0, 0
+	MOVWF      main_check_L0+0
+;Ejecutor.c,22 :: 		check = ~check + 1;
+	COMF       R0+0, 1
+	INCF       R0+0, 0
+	MOVWF      R1+0
+	MOVF       R1+0, 0
+	MOVWF      main_check_L0+0
+;Ejecutor.c,23 :: 		check = (check == (unsigned char)trama[size-1]);
+	MOVF       R2+0, 0
+	MOVWF      FSR
+	MOVF       R1+0, 0
 	XORWF      INDF+0, 0
 	MOVLW      1
 	BTFSS      STATUS+0, 2
@@ -479,47 +468,47 @@ L_main24:
 	MOVWF      R0+0
 	MOVF       R0+0, 0
 	MOVWF      main_check_L0+0
-;Ejecutor.c,25 :: 		check ? write_eeprom(trama) : UART1_Write_Text("BAD\n");
+;Ejecutor.c,24 :: 		check ? write_eeprom(trama) : UART1_Write_Text("BAD\n");
 	MOVF       R0+0, 0
 	BTFSC      STATUS+0, 2
-	GOTO       L_main26
+	GOTO       L_main23
 	MOVLW      main_trama_L0+0
 	MOVWF      FARG_write_eeprom_trama+0
 	CALL       _write_eeprom+0
-	GOTO       L_main27
-L_main26:
+	GOTO       L_main24
+L_main23:
 	MOVLW      ?lstr2_Ejecutor+0
 	MOVWF      FARG_UART1_Write_Text_uart_text+0
 	CALL       _UART1_Write_Text+0
-L_main27:
-;Ejecutor.c,26 :: 		PORTB = 0x00;
+L_main24:
+;Ejecutor.c,25 :: 		PORTB = 0x00;
 	CLRF       PORTB+0
-;Ejecutor.c,27 :: 		if(!trama[0] && check) {
+;Ejecutor.c,26 :: 		if(!trama[0] && check) {
 	MOVF       main_trama_L0+0, 0
 	BTFSS      STATUS+0, 2
-	GOTO       L_main30
+	GOTO       L_main27
 	MOVF       main_check_L0+0, 0
 	BTFSC      STATUS+0, 2
-	GOTO       L_main30
-L__main31:
-;Ejecutor.c,28 :: 		PORTB = 0xFF;
+	GOTO       L_main27
+L__main28:
+;Ejecutor.c,27 :: 		PORTB = 0xFF;
 	MOVLW      255
 	MOVWF      PORTB+0
-;Ejecutor.c,29 :: 		UART1_Write_Text("STR\n");
+;Ejecutor.c,28 :: 		UART1_Write_Text("STR\n");
 	MOVLW      ?lstr3_Ejecutor+0
 	MOVWF      FARG_UART1_Write_Text_uart_text+0
 	CALL       _UART1_Write_Text+0
-;Ejecutor.c,31 :: 		goto 0x500;
+;Ejecutor.c,30 :: 		goto 0x500;
 	GOTO       1280
+;Ejecutor.c,32 :: 		}
+L_main27:
 ;Ejecutor.c,33 :: 		}
-L_main30:
-;Ejecutor.c,34 :: 		}
 L_main19:
-;Ejecutor.c,35 :: 		}
+;Ejecutor.c,34 :: 		}
 L_main18:
-;Ejecutor.c,36 :: 		}
+;Ejecutor.c,35 :: 		}
 	GOTO       L_main16
-;Ejecutor.c,37 :: 		}
+;Ejecutor.c,36 :: 		}
 L_end_main:
 	GOTO       $+0
 ; end of _main

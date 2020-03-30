@@ -1,5 +1,6 @@
 #include "eeprom_manager.c"
 #include "uart_manager.c"
+#define dir_offset 0x0500
 void main() {
    unsigned char * trama[25] = {0};
    unsigned char size = 0, j = 0, check = 0;
@@ -27,7 +28,7 @@ void main() {
        PORTB = 0xFF;
        UART1_Write_Text("STR\n");
        asm {
-        goto 0x500;
+        goto dir_offset;
        }
       }
      }

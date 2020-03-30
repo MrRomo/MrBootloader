@@ -80,7 +80,7 @@ unsigned char ascii2hex(){
  PORTB = 0xFF;
  return dato;
 }
-#line 3 "C:/Users/wwrik/Documents/Code/Micros/MrBootloader/PIC/Ejecutor/Ejecutor.c"
+#line 4 "C:/Users/wwrik/Documents/Code/Micros/MrBootloader/PIC/Ejecutor/Ejecutor.c"
 void main() {
  unsigned char * trama[25] = {0};
  unsigned char size = 0, j = 0, check = 0;
@@ -108,7 +108,7 @@ void main() {
  PORTB = 0xFF;
  UART1_Write_Text("STR\n");
  asm {
- goto 0x500;
+ goto  0x0500 ;
  }
  }
  }

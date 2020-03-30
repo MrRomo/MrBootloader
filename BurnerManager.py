@@ -41,14 +41,19 @@ class BurnerManager:
                     print('{} - {} - Linea enviada correctamente.'.format(i,res))
                     size = int(line[1:3],16)+5
                     print('Size of trama:',size)
-                    for l in range(size):
-                        temp = self.serialManager.connection.read()
-                        code += temp.hex()
-                    self.console.pub('{} - :{} - Linea enviada correctamente. \n'.format(i,code.upper()))
-                    code = res = ''
+                    # for l in range(size):
+                    #     temp = self.serialManager.connection.read()
+                    #     code += temp.hex()
+                    # self.console.pub('{} - :{} - Linea enviada correctamente. \n'.format(i,code.upper()))
+                    # code = res = ''
                     break
-                print('-{}-'.format(res))
-                delay(1)
-
+                elif (res == 'END'):
+                    self.console.pub('Grabado Finalizado\n'.format(i,line))
+                    break
+                elif (res == 'STR'):
+                    self.console.pub('Iniciando Grabado\n'.format(i,line))
+                    break
+                else:
+                    break
 
                 

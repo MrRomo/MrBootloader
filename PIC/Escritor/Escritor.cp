@@ -123,6 +123,12 @@ void main() {
 void write_intel(unsigned char * trama){
  unsigned char i = 0, addrh = trama[1], addr = trama[2], size = trama[0]+5;
  unsigned int dir = (addrh << 8 | addr)/2;
+ if(dir == 0x0000){
+ UART1_Write_Text("STR\n");
+ }
+ if(dir>0x1FFF) {
+ UART1_Write_Text("END\n");
+ }else{
  trama[2] = dir;
  trama[1] = dir>>8;
  PORTB = 0xFF;
@@ -132,9 +138,10 @@ void write_intel(unsigned char * trama){
  if(trama[2] == 0xFF) trama[1]+=0x01;
  trama[2]+=0x01;
  delay_ms(1);
- }
  i = 0;
  UART1_Write_Text("OK\n");
+ }
+ }
 }
 
 void start() {

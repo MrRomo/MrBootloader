@@ -6,7 +6,7 @@ Value=0
 [BUILD_TYPE]
 Value=0
 [ACTIVE_TAB]
-Value=Escritor.c
+Value=eeprom_manager.c
 [USE_EEPROM]
 Value=0
 [USE_HEAP]
@@ -16,7 +16,7 @@ Value=0
 [EEPROM_DEFINITION]
 Value=
 [FILES]
-File0=Escritor.c
+File0=Ejecutor.c
 Count=1
 [BINARIES]
 Count=0
@@ -24,7 +24,7 @@ Count=0
 Count=0
 ActiveImageIndex=-1
 [OPENED_FILES]
-File0=Escritor.c
+File0=Ejecutor.c
 File1=uart_manager.c
 File2=eeprom_manager.c
 Count=3
@@ -51,10 +51,8 @@ File2=UART
 File3=Software_UART
 Count=4
 [EXPANDED_NODES]
-0=Escritor.mcppi
+0=Ejecutor.mcppi
 1=Sources
 Count=2
 [LIB_EXPANDED_NODES]
-0=mikroE Libraries
-1=System Libraries
-Count=3
+Count=1

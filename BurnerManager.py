@@ -33,7 +33,6 @@ class BurnerManager:
                 code = ''
                 if (res == 'BAD'):
                     self.console.pub('{} - {} - Error de transmisión - Reenviando...\n'.format(i,line))
-                    delay(1)
                     self.serialManager.connection.flushInput()
                     self.serialManager.write_port_byte(line)
                 elif (res == 'OK'):

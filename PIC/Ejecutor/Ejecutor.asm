@@ -109,50 +109,34 @@ _write_eeprom:
 ;eeprom_manager.c,28 :: 		PORTB = 0xFF;
 	MOVLW      255
 	MOVWF      PORTB+0
-;eeprom_manager.c,30 :: 		for(i = 0; i<trama[0]; i+=2){
+;eeprom_manager.c,30 :: 		for(i = 0; i<trama[0]/2; i++){
 	CLRF       write_eeprom_i_L0+0
 L_write_eeprom2:
 	MOVF       FARG_write_eeprom_trama+0, 0
 	MOVWF      FSR
 	MOVF       INDF+0, 0
+	MOVWF      R2+0
+	MOVF       R2+0, 0
+	MOVWF      R1+0
+	RRF        R1+0, 1
+	BCF        R1+0, 7
+	MOVF       R1+0, 0
 	SUBWF      write_eeprom_i_L0+0, 0
 	BTFSC      STATUS+0, 0
 	GOTO       L_write_eeprom3
-;eeprom_manager.c,31 :: 		if(addr == 0xFF) addrh+=0x01;
-	MOVF       write_eeprom_addr_L0+0, 0
-	XORLW      255
-	BTFSS      STATUS+0, 2
-	GOTO       L_write_eeprom5
-	INCF       write_eeprom_addrh_L0+0, 1
-L_write_eeprom5:
-;eeprom_manager.c,32 :: 		addr+=0x01;
-	INCF       write_eeprom_addr_L0+0, 1
-;eeprom_manager.c,33 :: 		EEADR = addr;
+;eeprom_manager.c,31 :: 		EEADR = addr;
 	MOVF       write_eeprom_addr_L0+0, 0
 	MOVWF      EEADR+0
-;eeprom_manager.c,34 :: 		EEADRH = addrh;
+;eeprom_manager.c,32 :: 		EEADRH = addrh;
 	MOVF       write_eeprom_addrh_L0+0, 0
 	MOVWF      EEADRH+0
-;eeprom_manager.c,35 :: 		EEDATA = trama[i*2+5];
+;eeprom_manager.c,33 :: 		EEDATA = trama[i*2+4];
 	MOVF       write_eeprom_i_L0+0, 0
 	MOVWF      R2+0
 	CLRF       R2+1
 	RLF        R2+0, 1
 	RLF        R2+1, 1
 	BCF        R2+0, 0
-	MOVLW      5
-	ADDWF      R2+0, 0
-	MOVWF      R0+0
-	MOVF       R2+1, 0
-	BTFSC      STATUS+0, 0
-	ADDLW      1
-	MOVWF      R0+1
-	MOVF       R0+0, 0
-	ADDWF      FARG_write_eeprom_trama+0, 0
-	MOVWF      FSR
-	MOVF       INDF+0, 0
-	MOVWF      EEDATA+0
-;eeprom_manager.c,36 :: 		EEDATH = trama[i*2+4];
 	MOVLW      4
 	ADDWF      R2+0, 0
 	MOVWF      R0+0
@@ -164,36 +148,57 @@ L_write_eeprom5:
 	ADDWF      FARG_write_eeprom_trama+0, 0
 	MOVWF      FSR
 	MOVF       INDF+0, 0
+	MOVWF      EEDATA+0
+;eeprom_manager.c,34 :: 		EEDATH = trama[i*2+5];
+	MOVLW      5
+	ADDWF      R2+0, 0
+	MOVWF      R0+0
+	MOVF       R2+1, 0
+	BTFSC      STATUS+0, 0
+	ADDLW      1
+	MOVWF      R0+1
+	MOVF       R0+0, 0
+	ADDWF      FARG_write_eeprom_trama+0, 0
+	MOVWF      FSR
+	MOVF       INDF+0, 0
 	MOVWF      EEDATH+0
-;eeprom_manager.c,37 :: 		EECON1.EEPGD = 1;
+;eeprom_manager.c,35 :: 		EECON1.EEPGD = 1;
 	BSF        EECON1+0, 7
-;eeprom_manager.c,38 :: 		EECON1.WREN = 1;
+;eeprom_manager.c,36 :: 		EECON1.WREN = 1;
 	BSF        EECON1+0, 2
-;eeprom_manager.c,39 :: 		INTCON.GIE = 0;
+;eeprom_manager.c,37 :: 		INTCON.GIE = 0;
 	BCF        INTCON+0, 7
-;eeprom_manager.c,40 :: 		EECON2 = 0x55;
+;eeprom_manager.c,38 :: 		EECON2 = 0x55;
 	MOVLW      85
 	MOVWF      EECON2+0
-;eeprom_manager.c,41 :: 		EECON2 = 0xAA;
+;eeprom_manager.c,39 :: 		EECON2 = 0xAA;
 	MOVLW      170
 	MOVWF      EECON2+0
-;eeprom_manager.c,42 :: 		EECON1.WR = 1;
+;eeprom_manager.c,40 :: 		EECON1.WR = 1;
 	BSF        EECON1+0, 1
-;eeprom_manager.c,44 :: 		nop
+;eeprom_manager.c,42 :: 		nop
 	NOP
-;eeprom_manager.c,45 :: 		nop
+;eeprom_manager.c,43 :: 		nop
 	NOP
-;eeprom_manager.c,47 :: 		while(EECON1.WR);
-L_write_eeprom6:
+;eeprom_manager.c,45 :: 		while(EECON1.WR);
+L_write_eeprom5:
 	BTFSS      EECON1+0, 1
-	GOTO       L_write_eeprom7
 	GOTO       L_write_eeprom6
-L_write_eeprom7:
-;eeprom_manager.c,48 :: 		INTCON.GIE = 1;
+	GOTO       L_write_eeprom5
+L_write_eeprom6:
+;eeprom_manager.c,46 :: 		INTCON.GIE = 1;
 	BSF        INTCON+0, 7
-;eeprom_manager.c,30 :: 		for(i = 0; i<trama[0]; i+=2){
-	MOVLW      2
-	ADDWF      write_eeprom_i_L0+0, 1
+;eeprom_manager.c,47 :: 		if(addr == 0xFF) addrh+=0x01;
+	MOVF       write_eeprom_addr_L0+0, 0
+	XORLW      255
+	BTFSS      STATUS+0, 2
+	GOTO       L_write_eeprom7
+	INCF       write_eeprom_addrh_L0+0, 1
+L_write_eeprom7:
+;eeprom_manager.c,48 :: 		addr+=0x01;
+	INCF       write_eeprom_addr_L0+0, 1
+;eeprom_manager.c,30 :: 		for(i = 0; i<trama[0]/2; i++){
+	INCF       write_eeprom_i_L0+0, 1
 ;eeprom_manager.c,49 :: 		}
 	GOTO       L_write_eeprom2
 L_write_eeprom3:
@@ -327,17 +332,17 @@ L_check_sum13:
 	ADDWF      R2+0, 1
 ;uart_manager.c,31 :: 		for(j = 0; j<size; j++)
 	INCF       check_sum_j_L0+0, 1
-;uart_manager.c,35 :: 		}
+;uart_manager.c,34 :: 		}
 	GOTO       L_check_sum13
 L_check_sum14:
-;uart_manager.c,36 :: 		checksum = ~checksum + 1;
+;uart_manager.c,35 :: 		checksum = ~checksum + 1;
 	COMF       R2+0, 0
 	MOVWF      R0+0
 	INCF       R0+0, 0
 	MOVWF      R1+0
 	MOVF       R1+0, 0
 	MOVWF      R2+0
-;uart_manager.c,40 :: 		j = (checksum == trama[size]);
+;uart_manager.c,36 :: 		j = (checksum == trama[size]);
 	MOVF       R3+0, 0
 	ADDWF      FARG_check_sum_trama+0, 0
 	MOVWF      FSR
@@ -349,10 +354,10 @@ L_check_sum14:
 	MOVWF      R0+0
 	MOVF       R0+0, 0
 	MOVWF      check_sum_j_L0+0
-;uart_manager.c,41 :: 		checksum = 0;
+;uart_manager.c,37 :: 		checksum = 0;
 	CLRF       R2+0
-;uart_manager.c,42 :: 		return j;
-;uart_manager.c,43 :: 		}
+;uart_manager.c,38 :: 		return j;
+;uart_manager.c,39 :: 		}
 L_end_check_sum:
 	RETURN
 ; end of _check_sum

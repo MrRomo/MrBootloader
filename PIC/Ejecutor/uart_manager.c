@@ -31,12 +31,8 @@ unsigned char check_sum(unsigned char * trama) {
   for(j = 0; j<size; j++)
   {
     checksum += trama[j];
-//    UART1_Write(trama[j]);
   }
   checksum = ~checksum + 1;
-//  UART1_Write(trama[size]);
-//  UART1_Write(0xFF);
-//  UART1_Write(checksum);
   j = (checksum == trama[size]);
   checksum = 0;
   return j;

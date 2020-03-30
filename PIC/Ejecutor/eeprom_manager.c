@@ -27,13 +27,11 @@ void write_eeprom(char * trama){
   addr = dir;
   PORTB = 0xFF;
 
-  for(i = 0; i<trama[0]; i+=2){
-    if(addr == 0xFF) addrh+=0x01;
-    addr+=0x01;
+  for(i = 0; i<trama[0]/2; i++){
     EEADR = addr;
     EEADRH = addrh;
-    EEDATA = trama[i*2+5];
-    EEDATH = trama[i*2+4];
+    EEDATA = trama[i*2+4];
+    EEDATH = trama[i*2+5];
     EECON1.EEPGD = 1;
     EECON1.WREN = 1;
     INTCON.GIE = 0;
@@ -46,6 +44,8 @@ void write_eeprom(char * trama){
     }
     while(EECON1.WR);
     INTCON.GIE = 1;
+    if(addr == 0xFF) addrh+=0x01;
+    addr+=0x01;
   }
   UART1_Write_Text("OK\n");
 }

@@ -8,12 +8,12 @@ _main:
 	CLRF       PORTB+0
 ;Tester.c,5 :: 		while (1){
 L_main0:
-;Tester.c,6 :: 		Delay_ms(500);
-	MOVLW      3
+;Tester.c,6 :: 		Delay_ms(1000);
+	MOVLW      6
 	MOVWF      R11+0
-	MOVLW      138
+	MOVLW      19
 	MOVWF      R12+0
-	MOVLW      85
+	MOVLW      173
 	MOVWF      R13+0
 L_main2:
 	DECFSZ     R13+0, 1

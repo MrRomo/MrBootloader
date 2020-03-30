@@ -25,15 +25,3 @@ unsigned char ascii2hex(){
     PORTB = 0xFF;
     return dato;
 }
-unsigned char check_sum(unsigned char * trama) {
-  unsigned char checksum, j = 0x00;
-  unsigned char size = trama[0]+0x04;
-  for(j = 0; j<size; j++)
-  {
-    checksum += trama[j];
-  }
-  checksum = ~checksum + 1;
-  j = (checksum == trama[size]);
-  checksum = 0;
-  return j;
-}

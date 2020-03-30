@@ -218,7 +218,6 @@ ccpr1l
 ccpr2
 ccpr2h
 ccpr2l
-check_sum
 chs0
 chs0_bit
 chs1
@@ -712,7 +711,6 @@ sspmsk
 sspov
 sspov_bit
 sspstat
-start
 status
 stra
 stra_bit

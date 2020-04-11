@@ -53,8 +53,8 @@ class SerialManager:
         if(self.connected):
             self.disconnect()
         else:
-            baudios = int(self.ui.baudSelector.currentText())
-            self.connection = self.serial_connect(self.current_port, baudios, rtscts=True, timeout = 1)
+            baudios = int(self.ui.baudSelector.currentText()) 
+            self.connection = self.serial_connect(self.current_port, baudios, rtscts=False, timeout = 1)
             self.connected = True
             self.consoleManager.pub('Connection successfully to {}\n'.format(self.current_port))
             self.connectButton.setText(self.ui.translate("MainWindow", 'Disconnect'))
@@ -73,7 +73,7 @@ class SerialManager:
                 try:
                     read = self.connection.read()
                     msg = str(read.hex()).upper()
-                    print(' [{}] - [{}] '.format(int.from_bytes(read,sys.byteorder), msg))
+                    print(' [{}] - [{}] '.format(int.from_bytes(read,sys.byteorder), msg)) 
                     self.consoleManager.pub(msg)
                 except serial.serialutil.SerialException as SerialException:
                     self.disconnect()

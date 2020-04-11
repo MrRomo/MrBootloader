@@ -1,7 +1,7 @@
 #line 1 "C:/Users/wwrik/Documents/Code/Micros/MrBootloader/PIC/Ejecutor/Ejecutor.c"
 
 
-unsigned char readData(){
+unsigned char readData() {
  unsigned char dato;
  PORTB = 0x00;
  while (1){
@@ -23,7 +23,7 @@ unsigned char ascii2hex(){
  return dato;
 }
 
-void write_eeprom(char * trama){
+void write_eeprom(char * trama) {
  unsigned char i = 0, addrh = trama[1], addr = trama[2], size = trama[0]+5;
  unsigned int dir = (addrh << 8 | addr)/2;
  addrh = dir>>8;
@@ -58,6 +58,8 @@ void main() {
  unsigned char size = 0, j = 0, check = 0;
  TRISB=0X00;
  UART1_Init(9600);
+ PORTB=0XFF;
+ Delay_ms(1000);
  PORTB=0X00;
  while (1) {
  check = 0;

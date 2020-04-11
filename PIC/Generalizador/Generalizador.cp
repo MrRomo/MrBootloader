@@ -27,16 +27,15 @@ void write_eeprom(char * trama) {
  unsigned char i = 0, addrh = trama[1], addr = trama[2], size = trama[0]+5, datal = 0, datah = 0;
  unsigned int dir = (addrh << 8 | addr)/2;
  unsigned int dataf =0;
-
+ if(!((dir>0x1FFF))){
+ dir+= 0x0200 ;
  addrh = dir>>8;
  addr = dir;
- if(!((dir==0x0000)||(dir>0x1FFF))){
- dir+= 0x0500 ;
  for(i = 0; i<trama[0]/2; i++){
  datal = trama[i*2+4];
  datah = trama[i*2+5];
- dataf = (datal << 8 | datah);
- if(datah==0x28) dataf+ 0x0500 ;
+ dataf = (datah << 8 | datal);
+ if(datah==0x28) dataf+= 0x0200 ;
  EEADR = addr;
  EEADRH = addrh;
  EEDATA = dataf;
@@ -89,7 +88,7 @@ void main() {
  PORTB = 0xFF;
  UART1_Write_Text("STR\n");
  asm {
- goto  0x0500 ;
+ goto  0x0200 ;
  }
  }
  }

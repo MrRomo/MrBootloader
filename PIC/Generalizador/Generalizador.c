@@ -1,4 +1,4 @@
-#define dir_offset 0x0500
+#define dir_offset 0x0200
 
 unsigned char readData() {
    unsigned char dato;
@@ -26,16 +26,15 @@ void write_eeprom(char * trama) {
   unsigned char i = 0, addrh = trama[1], addr = trama[2], size = trama[0]+5,  datal = 0, datah = 0; 
   unsigned int dir = (addrh << 8 | addr)/2;
   unsigned int dataf =0;
-
-  addrh = dir>>8;
-  addr = dir;
-  if(!((dir==0x0000)||(dir>0x1FFF))){
+  if(!((dir>0x1FFF))){
     dir+=dir_offset;
+    addrh = dir>>8;
+    addr = dir;
     for(i = 0; i<trama[0]/2; i++){
       datal = trama[i*2+4];
       datah = trama[i*2+5];
-      dataf = (datal << 8 | datah);
-      if(datah==0x28) dataf+dir_offset;
+      dataf = (datah << 8 | datal);
+      if(datah==0x28) dataf+=dir_offset;
       EEADR = addr;
       EEADRH = addrh;
       EEDATA = dataf;

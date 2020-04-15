@@ -481,7 +481,7 @@ L__main29:
 	MOVWF      FARG_UART1_Write_Text_uart_text+0
 	CALL       _UART1_Write_Text+0
 ;Ejecutor.c,84 :: 		goto dir_offset;
-	GOTO       1280
+	GOTO       512
 ;Ejecutor.c,86 :: 		}
 L_main28:
 ;Ejecutor.c,87 :: 		}

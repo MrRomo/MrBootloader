@@ -1,4 +1,4 @@
-#define dir_offset 0x200
+#define dir_offset 0x0500
 
 unsigned char readData() {
    unsigned char dato;
@@ -22,26 +22,32 @@ unsigned char ascii2hex(){
     return dato;
 }
 
-void write_eeprom(char * trama) {
-  unsigned char i = 0, addrh = trama[1], addr = trama[2], size = trama[0]+5;
+void write_eeprom(char * trama,char size) {
+  unsigned char i = 0, j=0, addrh = trama[1], addr = trama[2], size = trama[0]+5,  datal = 0, datah = 0;
   unsigned int dir = (addrh << 8 | addr)/2;
-  addrh = dir>>8;
-  addr = dir;
-  if(!((dir==0x0000)||(dir>0x1FFF))){
-    for(i = 0; i<trama[0]/2; i++){
+  unsigned int dataf =0;
+  if(!((dir>0x1FFF))){
+    dir+=dir_offset;
+    addrh = dir>>8;
+    addr = dir;
+    for(i = 0; i<(size-5)/2; i++){
+      datal = trama[i*2+4];
+      datah = trama[i*2+5];
+      dataf = (datah << 8 | datal);
+      if(datah==0x28) dataf+=dir_offset;
       EEADR = addr;
       EEADRH = addrh;
-      EEDATA = trama[i*2+4];
-      EEDATH = trama[i*2+5];
+      EEDATA = dataf;
+      EEDATH = dataf>>8;
       EECON1.EEPGD = 1;
       EECON1.WREN = 1;
       INTCON.GIE = 0;
       EECON2 = 0x55;
       EECON2 = 0xAA;
-      EECON1.WR = 1;   
+      EECON1.WR = 1;
       asm{
-        nop
-        nop
+      nop
+      nop
       }
       while(EECON1.WR);
       INTCON.GIE = 1;
@@ -75,7 +81,7 @@ void main() {
       check -= trama[size-1];
       check = ~check + 1;
       check = (check == (unsigned char)trama[size-1]);
-      check ? write_eeprom(trama) : UART1_Write_Text("BAD\n");
+      check ? write_eeprom(trama, size) : UART1_Write_Text("BAD\n");
       PORTB = 0x00;
       if(!trama[0] && check) {
        PORTB = 0xFF;

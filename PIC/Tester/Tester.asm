@@ -1,7 +1,7 @@
 
 _main:
 
-;Tester.c,2 :: 		void main() org 0x500{
+;Tester.c,2 :: 		void main() org 0x200{
 ;Tester.c,3 :: 		TRISA = 0x00;
 	CLRF       TRISA+0
 ;Tester.c,4 :: 		TRISB = 0x00;

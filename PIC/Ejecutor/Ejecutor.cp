@@ -82,7 +82,7 @@ void main() {
  PORTB = 0xFF;
  UART1_Write_Text("STR\n");
  asm {
- goto  0x0500 ;
+ goto  0x200 ;
  }
  }
  }

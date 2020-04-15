@@ -1,12 +1,13 @@
 import serial
 import sys
 
-with open('Tester.hex', 'r') as f:
+with open('Tester_clean.hex', 'r') as f:
     archivo = f.read().split('\n')
 
 archivo.pop()
 print(archivo)
 print(type(archivo))
+# puerto = serial.Serial('COM4', 9600,  rtscts = True) # rtscts = False PARA PROTEUS !!!!!!!!!!!
 puerto = serial.Serial('COM1', 9600,  rtscts = False) # rtscts = False PARA PROTEUS !!!!!!!!!!!
 
 for linea in archivo:

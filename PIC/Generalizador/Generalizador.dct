@@ -306,6 +306,8 @@ f
 ferr
 ferr_bit
 fixsign32
+flash_read
+flash_write
 fsr
 fsrptr
 fvren

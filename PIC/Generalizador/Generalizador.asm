@@ -54,15 +54,15 @@ _ascii2hex:
 	MOVLW      0
 	MOVWF      ?FLOC___ascii2hexT3+1
 	MOVF       R0+0, 0
-L__ascii2hex31:
+L__ascii2hex30:
 	BTFSC      STATUS+0, 2
-	GOTO       L__ascii2hex32
+	GOTO       L__ascii2hex31
 	RLF        ?FLOC___ascii2hexT3+0, 1
 	RLF        ?FLOC___ascii2hexT3+1, 1
 	BCF        ?FLOC___ascii2hexT3+0, 0
 	ADDLW      255
-	GOTO       L__ascii2hex31
-L__ascii2hex32:
+	GOTO       L__ascii2hex30
+L__ascii2hex31:
 	GOTO       L_ascii2hex4
 L_ascii2hex3:
 	MOVLW      48
@@ -73,15 +73,15 @@ L_ascii2hex3:
 	MOVLW      0
 	MOVWF      ?FLOC___ascii2hexT3+1
 	MOVF       R0+0, 0
-L__ascii2hex33:
+L__ascii2hex32:
 	BTFSC      STATUS+0, 2
-	GOTO       L__ascii2hex34
+	GOTO       L__ascii2hex33
 	RLF        ?FLOC___ascii2hexT3+0, 1
 	RLF        ?FLOC___ascii2hexT3+1, 1
 	BCF        ?FLOC___ascii2hexT3+0, 0
 	ADDLW      255
-	GOTO       L__ascii2hex33
-L__ascii2hex34:
+	GOTO       L__ascii2hex32
+L__ascii2hex33:
 L_ascii2hex4:
 	MOVF       ?FLOC___ascii2hexT3+0, 0
 	MOVWF      ascii2hex_dato_L0+0
@@ -119,8 +119,8 @@ L_end_ascii2hex:
 
 _write_eeprom:
 
-;Generalizador.c,25 :: 		void write_eeprom(char * trama,char size) {
-;Generalizador.c,26 :: 		unsigned char i = 0, j=0, addrh = trama[1], addr = trama[2], size = trama[0]+5,  datal = 0, datah = 0;
+;Generalizador.c,25 :: 		void write_eeprom(char * trama) {
+;Generalizador.c,26 :: 		unsigned char i = 0, addrh = trama[1], addr = trama[2], size = trama[0]+5,  datal = 0, datah = 0;
 	CLRF       write_eeprom_i_L0+0
 	INCF       FARG_write_eeprom_trama+0, 0
 	MOVWF      FSR
@@ -131,16 +131,6 @@ _write_eeprom:
 	MOVWF      FSR
 	MOVF       INDF+0, 0
 	MOVWF      write_eeprom_addr_L0+0
-	MOVF       FARG_write_eeprom_trama+0, 0
-	MOVWF      FSR
-	MOVLW      5
-	ADDWF      INDF+0, 0
-	MOVWF      R0+0
-	CLRF       R0+1
-	BTFSC      STATUS+0, 0
-	INCF       R0+1, 1
-	MOVF       R0+0, 0
-	MOVWF      write_eeprom_size_L0+0
 ;Generalizador.c,27 :: 		unsigned int dir = (addrh << 8 | addr)/2;
 	MOVF       write_eeprom_addrh_L0+0, 0
 	MOVWF      write_eeprom_dir_L0+1
@@ -159,20 +149,20 @@ _write_eeprom:
 	MOVF       write_eeprom_dir_L0+1, 0
 	SUBLW      31
 	BTFSS      STATUS+0, 2
-	GOTO       L__write_eeprom36
+	GOTO       L__write_eeprom35
 	MOVF       write_eeprom_dir_L0+0, 0
 	SUBLW      255
-L__write_eeprom36:
+L__write_eeprom35:
 	BTFSS      STATUS+0, 0
 	GOTO       L_write_eeprom7
 ;Generalizador.c,30 :: 		dir+=dir_offset;
-	MOVLW      0
+	MOVLW      80
 	ADDWF      write_eeprom_dir_L0+0, 0
 	MOVWF      R3+0
 	MOVF       write_eeprom_dir_L0+1, 0
 	BTFSC      STATUS+0, 0
 	ADDLW      1
-	ADDLW      5
+	ADDLW      2
 	MOVWF      R3+1
 	MOVF       R3+0, 0
 	MOVWF      write_eeprom_dir_L0+0
@@ -187,42 +177,19 @@ L__write_eeprom36:
 ;Generalizador.c,32 :: 		addr = dir;
 	MOVF       R3+0, 0
 	MOVWF      write_eeprom_addr_L0+0
-;Generalizador.c,33 :: 		for(i = 0; i<(size-5)/2; i++){
+;Generalizador.c,33 :: 		for(i = 0; i<(trama[0]/2); i++){
 	CLRF       write_eeprom_i_L0+0
 L_write_eeprom8:
-	MOVLW      5
-	SUBWF      write_eeprom_size_L0+0, 0
-	MOVWF      R3+0
-	CLRF       R3+1
-	BTFSS      STATUS+0, 0
-	DECF       R3+1, 1
-	MOVF       R3+0, 0
+	MOVF       FARG_write_eeprom_trama+0, 0
+	MOVWF      FSR
+	MOVF       INDF+0, 0
+	MOVWF      R2+0
+	MOVF       R2+0, 0
 	MOVWF      R1+0
-	MOVF       R3+1, 0
-	MOVWF      R1+1
-	RRF        R1+1, 1
 	RRF        R1+0, 1
-	BCF        R1+1, 7
-	BTFSC      R1+1, 6
-	BSF        R1+1, 7
-	BTFSS      R1+1, 7
-	GOTO       L__write_eeprom37
-	BTFSS      STATUS+0, 0
-	GOTO       L__write_eeprom37
-	INCF       R1+0, 1
-	BTFSC      STATUS+0, 2
-	INCF       R1+1, 1
-L__write_eeprom37:
-	MOVLW      128
-	MOVWF      R0+0
-	MOVLW      128
-	XORWF      R1+1, 0
-	SUBWF      R0+0, 0
-	BTFSS      STATUS+0, 2
-	GOTO       L__write_eeprom38
+	BCF        R1+0, 7
 	MOVF       R1+0, 0
 	SUBWF      write_eeprom_i_L0+0, 0
-L__write_eeprom38:
 	BTFSC      STATUS+0, 0
 	GOTO       L_write_eeprom9
 ;Generalizador.c,34 :: 		datal = trama[i*2+4];
@@ -270,9 +237,9 @@ L__write_eeprom38:
 	XORLW      40
 	BTFSS      STATUS+0, 2
 	GOTO       L_write_eeprom11
-	MOVLW      0
+	MOVLW      80
 	ADDWF      write_eeprom_dataf_L0+0, 1
-	MOVLW      5
+	MOVLW      2
 	BTFSC      STATUS+0, 0
 	ADDLW      1
 	ADDWF      write_eeprom_dataf_L0+1, 1
@@ -327,7 +294,7 @@ L_write_eeprom13:
 L_write_eeprom14:
 ;Generalizador.c,55 :: 		addr+=0x01;
 	INCF       write_eeprom_addr_L0+0, 1
-;Generalizador.c,33 :: 		for(i = 0; i<(size-5)/2; i++){
+;Generalizador.c,33 :: 		for(i = 0; i<(trama[0]/2); i++){
 	INCF       write_eeprom_i_L0+0, 1
 ;Generalizador.c,56 :: 		}
 	GOTO       L_write_eeprom8
@@ -383,65 +350,46 @@ _main:
 	MOVWF      SPBRG+0
 	BSF        TXSTA+0, 2
 	CALL       _UART1_Init+0
-;Generalizador.c,66 :: 		PORTB=0XFF;
-	MOVLW      255
-	MOVWF      PORTB+0
-;Generalizador.c,67 :: 		Delay_ms(1000);
-	MOVLW      6
-	MOVWF      R11+0
-	MOVLW      19
-	MOVWF      R12+0
-	MOVLW      173
-	MOVWF      R13+0
-L_main15:
-	DECFSZ     R13+0, 1
-	GOTO       L_main15
-	DECFSZ     R12+0, 1
-	GOTO       L_main15
-	DECFSZ     R11+0, 1
-	GOTO       L_main15
-	NOP
-	NOP
-;Generalizador.c,68 :: 		PORTB=0X00;
+;Generalizador.c,66 :: 		PORTB=0X00;
 	CLRF       PORTB+0
-;Generalizador.c,69 :: 		while (1) {
-L_main16:
-;Generalizador.c,70 :: 		check = 0;
+;Generalizador.c,67 :: 		while (1) {
+L_main15:
+;Generalizador.c,68 :: 		check = 0;
 	CLRF       main_check_L0+0
-;Generalizador.c,71 :: 		if(UART1_Data_Ready()){
+;Generalizador.c,69 :: 		if(UART1_Data_Ready()){
 	CALL       _UART1_Data_Ready+0
 	MOVF       R0+0, 0
 	BTFSC      STATUS+0, 2
-	GOTO       L_main18
-;Generalizador.c,72 :: 		check = readData();
+	GOTO       L_main17
+;Generalizador.c,70 :: 		check = readData();
 	CALL       _readData+0
 	MOVF       R0+0, 0
 	MOVWF      main_check_L0+0
-;Generalizador.c,73 :: 		if(check == ':'){
+;Generalizador.c,71 :: 		if(check == ':'){
 	MOVF       R0+0, 0
 	XORLW      58
 	BTFSS      STATUS+0, 2
-	GOTO       L_main19
-;Generalizador.c,74 :: 		trama[0] = ascii2hex();
+	GOTO       L_main18
+;Generalizador.c,72 :: 		trama[0] = ascii2hex();
 	CALL       _ascii2hex+0
 	MOVF       R0+0, 0
 	MOVWF      main_trama_L0+0
-;Generalizador.c,75 :: 		check = trama[0];
+;Generalizador.c,73 :: 		check = trama[0];
 	MOVF       R0+0, 0
 	MOVWF      main_check_L0+0
-;Generalizador.c,76 :: 		size = trama[0] + 0x05;
+;Generalizador.c,74 :: 		size = trama[0] + 0x05;
 	MOVLW      5
 	ADDWF      R0+0, 0
 	MOVWF      main_size_L0+0
-;Generalizador.c,77 :: 		for(j = 1; j<size; j++){
+;Generalizador.c,75 :: 		for(j = 1; j<size; j++){
 	MOVLW      1
 	MOVWF      main_j_L0+0
-L_main20:
+L_main19:
 	MOVF       main_size_L0+0, 0
 	SUBWF      main_j_L0+0, 0
 	BTFSC      STATUS+0, 0
-	GOTO       L_main21
-;Generalizador.c,78 :: 		trama[j] = ascii2hex();
+	GOTO       L_main20
+;Generalizador.c,76 :: 		trama[j] = ascii2hex();
 	MOVF       main_j_L0+0, 0
 	ADDLW      main_trama_L0+0
 	MOVWF      FLOC__main+0
@@ -450,18 +398,18 @@ L_main20:
 	MOVWF      FSR
 	MOVF       R0+0, 0
 	MOVWF      INDF+0
-;Generalizador.c,79 :: 		check += trama[j];
+;Generalizador.c,77 :: 		check += trama[j];
 	MOVF       main_j_L0+0, 0
 	ADDLW      main_trama_L0+0
 	MOVWF      FSR
 	MOVF       INDF+0, 0
 	ADDWF      main_check_L0+0, 1
-;Generalizador.c,77 :: 		for(j = 1; j<size; j++){
+;Generalizador.c,75 :: 		for(j = 1; j<size; j++){
 	INCF       main_j_L0+0, 1
-;Generalizador.c,80 :: 		}
-	GOTO       L_main20
-L_main21:
-;Generalizador.c,81 :: 		check -= trama[size-1];
+;Generalizador.c,78 :: 		}
+	GOTO       L_main19
+L_main20:
+;Generalizador.c,79 :: 		check -= trama[size-1];
 	MOVLW      1
 	SUBWF      main_size_L0+0, 0
 	MOVWF      R0+0
@@ -478,66 +426,56 @@ L_main21:
 	MOVWF      R0+0
 	MOVF       R0+0, 0
 	MOVWF      main_check_L0+0
-;Generalizador.c,82 :: 		check = ~check + 1;
+;Generalizador.c,80 :: 		check = ~check + 1;
 	COMF       R0+0, 1
 	INCF       R0+0, 0
 	MOVWF      R1+0
 	MOVF       R1+0, 0
 	MOVWF      main_check_L0+0
-;Generalizador.c,83 :: 		check = (check == (unsigned char)trama[size-1]);
+;Generalizador.c,81 :: 		(check == (unsigned char)trama[size-1]) ? write_eeprom(trama) : UART1_Write_Text("BAD\n");
 	MOVF       R2+0, 0
 	MOVWF      FSR
 	MOVF       R1+0, 0
 	XORWF      INDF+0, 0
-	MOVLW      1
 	BTFSS      STATUS+0, 2
-	MOVLW      0
-	MOVWF      R0+0
-	MOVF       R0+0, 0
-	MOVWF      main_check_L0+0
-;Generalizador.c,84 :: 		check ? write_eeprom(trama, size) : UART1_Write_Text("BAD\n");
-	MOVF       R0+0, 0
-	BTFSC      STATUS+0, 2
-	GOTO       L_main23
+	GOTO       L_main22
 	MOVLW      main_trama_L0+0
 	MOVWF      FARG_write_eeprom_trama+0
-	MOVF       main_size_L0+0, 0
-	MOVWF      FARG_write_eeprom_size+0
 	CALL       _write_eeprom+0
-	GOTO       L_main24
-L_main23:
+	GOTO       L_main23
+L_main22:
 	MOVLW      ?lstr2_Generalizador+0
 	MOVWF      FARG_UART1_Write_Text_uart_text+0
 	CALL       _UART1_Write_Text+0
-L_main24:
-;Generalizador.c,85 :: 		PORTB = 0x00;
+L_main23:
+;Generalizador.c,82 :: 		PORTB = 0x00;
 	CLRF       PORTB+0
-;Generalizador.c,86 :: 		if(!trama[0] && check) {
+;Generalizador.c,83 :: 		if(!trama[0] && check) {
 	MOVF       main_trama_L0+0, 0
 	BTFSS      STATUS+0, 2
-	GOTO       L_main27
+	GOTO       L_main26
 	MOVF       main_check_L0+0, 0
 	BTFSC      STATUS+0, 2
-	GOTO       L_main27
-L__main28:
-;Generalizador.c,87 :: 		PORTB = 0xFF;
+	GOTO       L_main26
+L__main27:
+;Generalizador.c,84 :: 		PORTB = 0xFF;
 	MOVLW      255
 	MOVWF      PORTB+0
-;Generalizador.c,88 :: 		UART1_Write_Text("STR\n");
+;Generalizador.c,85 :: 		UART1_Write_Text("STR\n");
 	MOVLW      ?lstr3_Generalizador+0
 	MOVWF      FARG_UART1_Write_Text_uart_text+0
 	CALL       _UART1_Write_Text+0
-;Generalizador.c,90 :: 		goto dir_offset;
-	GOTO       1280
-;Generalizador.c,92 :: 		}
-L_main27:
-;Generalizador.c,93 :: 		}
-L_main19:
-;Generalizador.c,94 :: 		}
+;Generalizador.c,87 :: 		goto dir_offset;
+	GOTO       592
+;Generalizador.c,89 :: 		}
+L_main26:
+;Generalizador.c,90 :: 		}
 L_main18:
-;Generalizador.c,95 :: 		}
-	GOTO       L_main16
-;Generalizador.c,96 :: 		}
+;Generalizador.c,91 :: 		}
+L_main17:
+;Generalizador.c,92 :: 		}
+	GOTO       L_main15
+;Generalizador.c,93 :: 		}
 L_end_main:
 	GOTO       $+0
 ; end of _main

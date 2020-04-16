@@ -1,5 +1,5 @@
 
-void main() org 0x200{
+void main() {
      TRISA = 0x00;
      TRISB = 0x00;
 //      TRISC = 0x00;

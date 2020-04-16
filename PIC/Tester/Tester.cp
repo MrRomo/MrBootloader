@@ -1,6 +1,6 @@
 #line 1 "C:/Users/wwrik/Documents/Code/Micros/MrBootloader/PIC/Tester/Tester.c"
 
-void main() org 0x200{
+void main() {
  TRISA = 0x00;
  TRISB = 0x00;
 
